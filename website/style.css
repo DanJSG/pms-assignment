@@ -1,0 +1,13 @@
+.ref-list {
+    counter-reset: item;
+}
+
+.ref-list li::before {
+    content: "[" counter(item) "] ";
+    counter-increment: item;
+}
+
+.ref-list li {
+    display: block;
+    margin-bottom: .25em;
+}
