@@ -5,16 +5,16 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     in(1:length(input)) = input;
 
     % Define impulse excitation for obtaining impulse response
-    IR_test = zeros(Fs * 3, 1);
-    IR_test(1) = 1;
+    irTest = zeros(Fs * 3, 1);
+    irTest(1) = 1;
 
     % Initialize Main Output Signal
-    N_out = length(in);
-    output = zeros(N_out, 1);
+    nOutputSamples = length(in);
+    output = zeros(nOutputSamples, 1);
 
     % Initialize Impulse Response Output Signal
-    N_IR = length(IR_test);
-    IR_out = zeros(N_IR, 1);
+    nIrSamples = length(irTest);
+    irOutput = zeros(nIrSamples, 1);
 
     % Set Maximum delay time for the unit reverberators of 70 ms
     maxDelay = ceil(0.07 * Fs);
@@ -26,73 +26,73 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     buffer4 = zeros(maxDelay, 1); 
 
     % Initialise the Early Reflection Unit Tapped Delay Line
-    er_buffer = zeros(maxDelay, 1);
+    earlyReflectionsBuffer = zeros(maxDelay, 1);
 
     % Delay (ms) and Gain Parameters
     % Comb Filters
-    d1 = floor(0.0297 * Fs); 
-    d2 = floor(0.0371 * Fs);
-    d3 = floor(0.0411 * Fs);
-    d4 = floor(0.0437 * Fs);
-    g1 = feedback;
-    g2 = feedback;
-    g3 = feedback;
-    g4 = feedback;
+    delay1 = floor(0.0297 * Fs); 
+    delay2 = floor(0.0371 * Fs);
+    delay3 = floor(0.0411 * Fs);
+    delay4 = floor(0.0437 * Fs);
+    gain1 = feedback;
+    gain2 = feedback;
+    gain3 = feedback;
+    gain4 = feedback;
 
     % Allpass filters
-    apf_buffer1 = zeros(maxDelay, 1); 
-    apf_buffer2 = zeros(maxDelay, 1); 
+    apfBuffer1 = zeros(maxDelay, 1); 
+    apfBuffer2 = zeros(maxDelay, 1); 
 
-    apf_d1 = floor(0.005 * Fs); 
-    apf_d2 = floor(0.0017 * Fs); 
+    apfBuffer3 = floor(0.005 * Fs); 
+    apfBuffer4 = floor(0.0017 * Fs); 
 
-    apf_g1 = 0.875;
-    apf_g2 = 0.75;
+    apfGain1 = 0.875;
+    apfGain2 = 0.75;
 
     % Variables used as delay for a simple LPF in each Comb Filter function
-    fbLPF1 = 0;
-    fbLPF2 = 0;
-    fbLPF3 = 0;
-    fbLPF4 = 0;
+    fbLpf1 = 0;
+    fbLpf2 = 0;
+    fbLpf3 = 0;
+    fbLpf4 = 0;
 
     % Impulse Response
-    for n = 1:N_IR
+    for n = 1:nIrSamples
 
-        [IR_er, er_buffer] = EarlyReflections(IR_test(n, 1), er_buffer, Fs, n);
+        [irEarlyReflections, earlyReflectionsBuffer] = EarlyReflections(irTest(n, 1), earlyReflectionsBuffer, Fs, n);
 
         % Early Reflection Tapped Delay Line
-        [IR_combA, buffer1, fbLPF1] = FeedbackComb(IR_er, buffer1, n, d1, g1, fbLPF1, true);
-        [IR_combB, buffer2, fbLPF2] = FeedbackComb(IR_er, buffer2, n, d2, g2, fbLPF2, true);
-        [IR_combC, buffer3, fbLPF3] = FeedbackComb(IR_er, buffer3, n, d3, g3, fbLPF3, true);
-        [IR_combD, buffer4, fbLPF4] = FeedbackComb(IR_er, buffer4, n, d4, g4, fbLPF4, true);
+        [irComb1, buffer1, fbLpf1] = FeedbackComb(irEarlyReflections, buffer1, n, delay1, gain1, fbLpf1, true);
+        [irComb2, buffer2, fbLpf2] = FeedbackComb(irEarlyReflections, buffer2, n, delay2, gain2, fbLpf2, true);
+        [irComb3, buffer3, fbLpf3] = FeedbackComb(irEarlyReflections, buffer3, n, delay3, gain3, fbLpf3, true);
+        [irComb4, buffer4, fbLpf4] = FeedbackComb(irEarlyReflections, buffer4, n, delay4, gain4, fbLpf4, true);
 
-        comb_out = 0.25 * IR_combA + IR_combB + IR_combC + IR_combD;
+        combOutput = 0.25 * irComb1 + irComb2 + irComb3 + irComb4;
 
-        [IR_apf1, apf_buffer1] = apf(comb_out, apf_buffer1, n, apf_d1, apf_g1);
-        [IR_apf2, apf_buffer2] = apf(IR_apf1, apf_buffer2, n, apf_d2, apf_g2);
+        [irApf1, apfBuffer1] = apf(combOutput, apfBuffer1, n, apfBuffer3, apfGain1);
+        [irApf2, apfBuffer2] = apf(irApf1, apfBuffer2, n, apfBuffer4, apfGain2);
 
-        IR_out(n, 1) = IR_apf2;
+        irOutput(n, 1) = irApf2;
 
     end
     
-    ir = IR_out;
+    ir = irOutput;
 
     % Reverberate
-    for n = 1:N_out
+    for n = 1:nOutputSamples
 
         % Early Reflections Tapped Delay Line
-        [er, er_buffer] = EarlyReflections(in(n,1), er_buffer, Fs, n);
+        [er, earlyReflectionsBuffer] = EarlyReflections(in(n,1), earlyReflectionsBuffer, Fs, n);
 
         % Four Parallel FBCFs
-        [combA, buffer1, fbLPF1] = FeedbackComb(er, buffer1, n, d1, g1, fbLPF1, true);
-        [combB, buffer2, fbLPF2] = FeedbackComb(er, buffer2, n, d2, g2, fbLPF2, true);
-        [combC, buffer3, fbLPF3] = FeedbackComb(er, buffer3, n, d3, g3, fbLPF3, true);
-        [combD, buffer4, fbLPF4] = FeedbackComb(er, buffer4, n, d4, g4, fbLPF4, true);
+        [comb1, buffer1, fbLpf1] = FeedbackComb(er, buffer1, n, delay1, gain1, fbLpf1, true);
+        [comb2, buffer2, fbLpf2] = FeedbackComb(er, buffer2, n, delay2, gain2, fbLpf2, true);
+        [comb3, buffer3, fbLpf3] = FeedbackComb(er, buffer3, n, delay3, gain3, fbLpf3, true);
+        [comb4, buffer4, fbLpf4] = FeedbackComb(er, buffer4, n, delay4, gain4, fbLpf4, true);
 
-        comb_out = 0.25 * (combA + combB + combC + combD);
+        combOutput = 0.25 * (comb1 + comb2 + comb3 + comb4);
 
-        [apf1, apf_buffer1] = apf(comb_out, apf_buffer1, n, apf_d1, apf_g1);
-        [apf2, apf_buffer2] = apf(apf1, apf_buffer2, n, apf_d2, apf_g2);
+        [apf1, apfBuffer1] = apf(combOutput, apfBuffer1, n, apfBuffer3, apfGain1);
+        [apf2, apfBuffer2] = apf(apf1, apfBuffer2, n, apfBuffer4, apfGain2);
 
         output(n, 1) = apf2;
 
