@@ -52,13 +52,13 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     % Impulse Response
     for n = 1:nIrSamples
 
-        [irEarlyReflections, earlyReflectionsBuffer] = EarlyReflections(irTest(n, 1), earlyReflectionsBuffer, Fs, n);
+        [irEarlyReflections, earlyReflectionsBuffer] = earlyreflections(irTest(n, 1), earlyReflectionsBuffer, Fs, n);
 
         % Early Reflection Tapped Delay Line
-        [irComb1, buffer1] = FeedbackComb(irEarlyReflections, buffer1, n, delay1, gain1, true);
-        [irComb2, buffer2] = FeedbackComb(irEarlyReflections, buffer2, n, delay2, gain2, true);
-        [irComb3, buffer3] = FeedbackComb(irEarlyReflections, buffer3, n, delay3, gain3, true);
-        [irComb4, buffer4] = FeedbackComb(irEarlyReflections, buffer4, n, delay4, gain4, true);
+        [irComb1, buffer1] = feedbackcomb(irEarlyReflections, buffer1, n, delay1, gain1, true);
+        [irComb2, buffer2] = feedbackcomb(irEarlyReflections, buffer2, n, delay2, gain2, true);
+        [irComb3, buffer3] = feedbackcomb(irEarlyReflections, buffer3, n, delay3, gain3, true);
+        [irComb4, buffer4] = feedbackcomb(irEarlyReflections, buffer4, n, delay4, gain4, true);
 
         combOutput = 0.25 * irComb1 + irComb2 + irComb3 + irComb4;
 
@@ -75,13 +75,13 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     for n = 1:nOutputSamples
 
         % Early Reflections Tapped Delay Line
-        [er, earlyReflectionsBuffer] = EarlyReflections(in(n,1), earlyReflectionsBuffer, Fs, n);
+        [er, earlyReflectionsBuffer] = earlyreflections(in(n,1), earlyReflectionsBuffer, Fs, n);
 
         % Four Parallel FBCFs
-        [comb1, buffer1] = FeedbackComb(er, buffer1, n, delay1, gain1, true);
-        [comb2, buffer2] = FeedbackComb(er, buffer2, n, delay2, gain2, true);
-        [comb3, buffer3] = FeedbackComb(er, buffer3, n, delay3, gain3, true);
-        [comb4, buffer4] = FeedbackComb(er, buffer4, n, delay4, gain4, true);
+        [comb1, buffer1] = feedbackcomb(er, buffer1, n, delay1, gain1, true);
+        [comb2, buffer2] = feedbackcomb(er, buffer2, n, delay2, gain2, true);
+        [comb3, buffer3] = feedbackcomb(er, buffer3, n, delay3, gain3, true);
+        [comb4, buffer4] = feedbackcomb(er, buffer4, n, delay4, gain4, true);
 
         combOutput = 0.25 * (comb1 + comb2 + comb3 + comb4);
 

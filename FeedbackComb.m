@@ -17,7 +17,7 @@
 %   LPF: flag to set filter on/off    
 %
 
-function [out, buffer] = FeedbackComb(in, buffer, n, delay, fbGain, LPF)
+function [out, buffer] = feedbackcomb(in, buffer, n, delay, fbGain, LPF)
 
     % Determine indexes for circular buffer
     len = length(buffer);

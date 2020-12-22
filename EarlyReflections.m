@@ -29,7 +29,7 @@
 % 0.0496, 0.5
 % 0.0671, 0.45
 
-function [out, buffer] = EarlyReflections(in, buffer, Fs, n)
+function [out, buffer] = earlyreflections(in, buffer, Fs, n)
 
     % Delay times converted from milliseconds
 
