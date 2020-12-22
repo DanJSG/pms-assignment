@@ -4,10 +4,15 @@ function[output, flow] = flute(Fs, f0, duration, breath, pressure, attack, vibDe
     N = Fs * duration;
     
     % Attack, sustain and release as percentage of duration        
+    sustain = 0.2;              
     release = 0.001;            
     
     % Attack end sample
-    attackEnd = round(N * attack); 
+    attackEnd = round(N * attack);
+    % Sustain start sample
+    sustainStart = round(N * sustain);      
+    % Decay length in samples
+    decay_length = sustainStart - attackEnd;
     % Release start sample
     release_start = round(N * (1 - release));
     
@@ -19,9 +24,11 @@ function[output, flow] = flute(Fs, f0, duration, breath, pressure, attack, vibDe
     boreDelay = 0.25 * floor(Fs / f0);
     jetDelay = floor(boreDelay / 2);
     
+    
     % Flow Setup: ADSR envelope
     % Attack section
     flow(1:attackEnd) = linspace(0, pressure, attackEnd);
+
 
     % Sustain section
     flow(attackEnd + 1:release_start) = pressure;

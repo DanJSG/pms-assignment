@@ -14,30 +14,27 @@
 %   n : current sample number of the input signal
 %   delay : samples of delay
 %   fbGain : feed-back gain (linear scale)
-%   fbLPF: for low pass filter
 %   LPF: flag to set filter on/off    
 %
 
-function [out, buffer, fbLPF] = FeedbackComb(in, buffer, n, delay, fbGain, fbLPF, LPF)
+function [out, buffer] = FeedbackComb(in, buffer, n, delay, fbGain, LPF)
 
-% Determine indexes for circular buffer
-len = length(buffer);
-indexC = mod(n-1,len) + 1; % Current index 
-indexD = mod(n-delay-1,len) + 1; % Delay index
+    % Determine indexes for circular buffer
+    len = length(buffer);
+    indexC = mod(n-1,len) + 1; % Current index 
+    indexD = mod(n-delay-1,len) + 1; % Delay index
 
-out = buffer(indexD,1);
+    out = buffer(indexD,1);
 
-% Store the current output in appropriate index
-% LPF in feedback loop - Two point moving average
-if LPF == true
-%     buffer(indexC,1) = (1 / 3) * (buffer(mod(n - 2, len) + 1, 1) + buffer(mod(n - 3, len) + 1, 1) + in + fbGain*(out));
-    buffer(indexC,1) = (1 / 2) * (buffer(mod(n - 2, len) + 1, 1) + in + fbGain*(out));
-else
-    buffer(indexC,1) = in + fbGain*out;
+    % Store the current output in appropriate index
+    % LPF in feedback loop - Two point moving average
+    if LPF == true
+    %     buffer(indexC,1) = (1 / 3) * (buffer(mod(n - 2, len) + 1, 1) + buffer(mod(n - 3, len) + 1, 1) + in + fbGain*(out));
+        buffer(indexC,1) = (1 / 2) * (buffer(mod(n - 2, len) + 1, 1) + in + fbGain * out);
+    else
+        buffer(indexC,1) = in + fbGain*out;
+    end
+
 end
-% Store the current output for the Feedback LPF 
-% to be used with the next sample
-fbLPF = out;
-
 
  
