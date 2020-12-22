@@ -1,4 +1,6 @@
-function [output, ir] = reverberate(Fs, input, feedback, mix)
+function [output, ir] = reverberate(Fs, input, feedback, mix, reflectionPresetPath)
+
+    earlyReflectionVals = readmatrix(reflectionPresetPath);
 
     % Zero pad the file so the output will include the reverb tail
     in = zeros(length(input) + (Fs * 3), 1);
@@ -42,9 +44,8 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     % Allpass filters
     apfBuffer1 = zeros(maxDelay, 1); 
     apfBuffer2 = zeros(maxDelay, 1); 
-
-    apfBuffer3 = floor(0.005 * Fs); 
-    apfBuffer4 = floor(0.0017 * Fs); 
+    apfDelayTime1 = floor(0.005 * Fs); 
+    apfDelayTime2 = floor(0.0017 * Fs); 
 
     apfGain1 = 0.875;
     apfGain2 = 0.75;
@@ -52,7 +53,7 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     % Impulse Response
     for n = 1:nIrSamples
 
-        [irEarlyReflections, earlyReflectionsBuffer] = earlyreflections(irTest(n, 1), earlyReflectionsBuffer, Fs, n);
+        [irEarlyReflections, earlyReflectionsBuffer] = earlyreflections(irTest(n, 1), earlyReflectionsBuffer, Fs, n, earlyReflectionVals);
 
         % Early Reflection Tapped Delay Line
         [irComb1, buffer1] = feedbackcomb(irEarlyReflections, buffer1, n, delay1, gain1, true);
@@ -62,8 +63,8 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
 
         combOutput = 0.25 * irComb1 + irComb2 + irComb3 + irComb4;
 
-        [irApf1, apfBuffer1] = apf(combOutput, apfBuffer1, n, apfBuffer3, apfGain1);
-        [irApf2, apfBuffer2] = apf(irApf1, apfBuffer2, n, apfBuffer4, apfGain2);
+        [irApf1, apfBuffer1] = apf(combOutput, apfBuffer1, n, apfDelayTime1, apfGain1);
+        [irApf2, apfBuffer2] = apf(irApf1, apfBuffer2, n, apfDelayTime2, apfGain2);
 
         irOutput(n, 1) = irApf2;
 
@@ -75,7 +76,7 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
     for n = 1:nOutputSamples
 
         % Early Reflections Tapped Delay Line
-        [er, earlyReflectionsBuffer] = earlyreflections(in(n,1), earlyReflectionsBuffer, Fs, n);
+        [er, earlyReflectionsBuffer] = earlyreflections(in(n,1), earlyReflectionsBuffer, Fs, n, earlyReflectionVals);
 
         % Four Parallel FBCFs
         [comb1, buffer1] = feedbackcomb(er, buffer1, n, delay1, gain1, true);
@@ -85,14 +86,14 @@ function [output, ir] = reverberate(Fs, input, feedback, mix)
 
         combOutput = 0.25 * (comb1 + comb2 + comb3 + comb4);
 
-        [apf1, apfBuffer1] = apf(combOutput, apfBuffer1, n, apfBuffer3, apfGain1);
-        [apf2, apfBuffer2] = apf(apf1, apfBuffer2, n, apfBuffer4, apfGain2);
+        [apf1, apfBuffer1] = apf(combOutput, apfBuffer1, n, apfDelayTime1, apfGain1);
+        [apf2, apfBuffer2] = apf(apf1, apfBuffer2, n, apfDelayTime2, apfGain2);
 
         output(n, 1) = apf2;
 
     end
     
-    output = ((1 - mix) * in) + (mix * output);
+    output = normalize(((1 - mix) * in) + (mix * output), 'range', [-0.98, 0.98]);
     
 end
 

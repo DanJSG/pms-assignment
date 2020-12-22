@@ -29,16 +29,19 @@
 % 0.0496, 0.5
 % 0.0671, 0.45
 
-function [out, buffer] = earlyreflections(in, buffer, Fs, n)
+function [out, buffer] = earlyreflections(in, buffer, Fs, n, delays)
+
+%     disp(delays);
 
     % Delay times converted from milliseconds
-
-    delayTimes = fix(Fs * [0.0093; 0.0125; 0.0206; 0.022; 0.0223; 0.0276;
-        0.0287; 0.0333; 0.038; 0.0389; 0.0429; 0.0496; 0.0671]);
+    delayTimes = fix(Fs * delays(:, 1));
+%     delayTimes = fix(Fs * [0.0093; 0.0125; 0.0206; 0.022; 0.0223; 0.0276;
+%         0.0287; 0.0333; 0.038; 0.0389; 0.0429; 0.0496; 0.0671]);
 
     % There must be a "gain" for each of the "delayTimes"
-    gains = [1; 0.8; -0.75; 0.74; 0.54; 0.6; -0.59; 0.58; -0.6; 0.54; 
-        0.52; -0.5; 0.45];          
+    gains = delays(:, 2);
+%     gains = [1; 0.8; -0.75; 0.74; 0.54; 0.6; -0.59; 0.58; -0.6; 0.54; 
+%         0.52; -0.5; 0.45];          
 
     % Determine indexes for circular buffer
     len = length(buffer);
