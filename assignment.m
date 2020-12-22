@@ -7,6 +7,14 @@ note_4 = flute(Fs, 233.08, 4, 0.2, 0.3, 0.00001, 0.1);
 
 combined = 0.2 * (note_1 + note_2 + note_3 + note_4);
 
-reverbed = reverberate(Fs, combined, 0.8, 0.4);
+% [drums, Fs] = audioread("drums.wav");
+
+resonated = resonate(combined, 0.2, [30, 9], [8, 3], 2, 0.01, [27, 3], 4096);
+
+% resonated = normalize(resonated, 'range', [-1, 1]);
+
+% plot(resonated);
+
+reverbed = reverberate(Fs, resonated, 0.8, 0.1);
 
 sound(reverbed, Fs);
