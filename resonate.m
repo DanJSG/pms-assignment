@@ -72,7 +72,7 @@ function[output] = resonate(input, mix, dimensions, excitationPoint, ...
     
     input(end:end + sampleDiff) = 0;
     
-    output = normalize(((1 - mix) * input) + (mix * output), 'range', [-0.98, 0.98]);
+    output = ((1 - mix) * input) + (mix * output);
 
 end
 

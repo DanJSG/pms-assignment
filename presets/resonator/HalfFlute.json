@@ -1,0 +1,15 @@
+{
+    "dimensions": [
+        33,
+        12
+    ],
+    "excitationPoint": [
+        8,
+        6
+    ],
+    "excitationSize": 3,
+    "outputPoint": [
+        33,
+        6
+    ]
+}

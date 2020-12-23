@@ -1,7 +1,7 @@
 function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth, Fs)
     
     % Number of samples
-    N = Fs * duration;
+    N = floor(Fs * duration);
     
     % Attack, sustain and release as percentage of duration        
     release = 0.001;            
@@ -38,9 +38,9 @@ function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth,
     
     % Vibrato envelope
     % Attack
-    vibratoEnv(1:N / 4) = linspace(0.25, 1, N / 4);
+    vibratoEnv(1:floor(N / 4)) = linspace(0.25, 1, N / 4);
     % Sustain
-    vibratoEnv(N / 4:N) = 1.0;
+    vibratoEnv(floor(N / 4):N) = 1.0;
     
     % Vibrato
     vibratoSamples = 1:1:N;
@@ -108,7 +108,6 @@ function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth,
     
     % Apply output envelope to smooth input and output
     output = output .* outputEnv;
-    output = 0.97 * normalize(output, 'range', [-1, 1]);
     
 end
 

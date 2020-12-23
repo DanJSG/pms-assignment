@@ -1,32 +1,38 @@
 Fs = 44100;
 
-% note_1 = [zeros(1, Fs * 1), flute(Fs, 261.63, 3, 0.05, 0.3, 0.00001, 0.025)];
-% note_2 = [zeros(1, Fs * 2), flute(Fs, 311.13, 2, 0.1, 0.3, 0.00001, 0.04)];
-% note_3 = [zeros(1, Fs * 3), flute(Fs, 392.00, 1, 0.15, 0.3, 0.00001, 0.06)];
+resPreset = jsondecode(fileread("./presets/resonator/Flute.json"));
+revPreset = jsondecode(fileread("./presets/reverb/SmallRoom.json"));
+flutePreset = jsondecode(fileread("./presets/flute/Breathy.json"));
+flute2Preset = jsondecode(fileread("./presets/flute/Soft.json"));
+
+crotchetDuration = 0.725;
+clipLength = floor(crotchetDuration * 6);
 
 % f0, dur, breath, pressure, attack, vibDepth, Fs
-note4 = flute(233.08, 2, 0.2, 0.3, 0.00025, 0.125, Fs);
+note1 = flute(440, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
+note2 = flute(523, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
+note3 = flute(659, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
+note4 = flute(349, crotchetDuration * 2, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
+note5 = flute(329, crotchetDuration * 2, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
+note6 = flute(311, crotchetDuration * 2, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
+chord = zeros(clipLength, 1);
+for n=1:6
+    startSample = floor((n - 1) * length(note1) + 1);
+    endSample = startSample + length(note1) - 1;
+    disp(startSample);
+    chord(startSample:endSample) = 0.33 * (note1 + note2 + note3);
+end
+chord(1:length(note4)) = chord(1:length(note4)) + 2 * note4';
+chord(length(note4):2 * length(note4) - 1) = chord(1:length(note4)) + 2 * note5';
+chord(2 * length(note4): 3 * length(note4) - 1) = chord(1:length(note4)) + 2* note6';
 
-% reverbVals = readmatrix("./presets/reverb/YorkMinster.csv");
+resonated = resonate(chord, 0.8, resPreset.dimensions, ...
+    resPreset.excitationPoint, resPreset.excitationSize, 0.01, ...
+    resPreset.outputPoint, 4096);
 
-% combined = 0.2 * (note_1 + note_2 + note_3 + note_4);
+[reverbed, ir] = reverberate(resonated, Fs, 0.3, revPreset.feedback, ...
+    revPreset.earlyReflectionsPath);
 
-% [drums, Fs] = audioread("drums.wav");
-
-resonated = resonate(note4, 1, [66, 12], [8, 6], 3, 0.01, [66, 6], 4096);
-
-% resonated = normalize(resonated, 'range', [-1, 1]);
-
-% plot(resonated);
-
-figure(2);
-plot(resonated);
-
-[reverbed, ir] = reverberate(Fs, resonated, 0.95, 0.95, "./presets/reverb/YorkMinster.csv");
-
-% reverbed = reverbed * 0.10;
-
-figure(2);
 plot(reverbed);
 
 sound(reverbed, Fs);
