@@ -1,4 +1,4 @@
-function[output, flow] = flute(Fs, f0, duration, breath, pressure, attack, vibDepth)
+function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth, Fs)
     
     % Number of samples
     N = Fs * duration;
