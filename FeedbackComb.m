@@ -21,23 +21,23 @@
 % Modified: Y3846756, 23/12/2020
 function [out, buffer] = feedbackcomb(in, buffer, n, delay, fbGain, LPF)
 
-% Determine indexes for circular buffer
-len = length(buffer);
-% Current index 
-indexC = mod(n - 1, len) + 1; 
-% Delay index
-indexD = mod(n - delay - 1, len) + 1; 
+    % Determine indexes for circular buffer
+    len = length(buffer);
+    % Current index 
+    indexC = mod(n - 1, len) + 1; 
+    % Delay index
+    indexD = mod(n - delay - 1, len) + 1; 
 
-% Output buffer
-out = buffer(indexD, 1);
+    % Output buffer
+    out = buffer(indexD, 1);
 
-% Store the current output in appropriate index
-% LPF in feedback loop - Two point moving average
-if LPF == true
-    buffer(indexC, 1) = (1 / 2) * (buffer(mod(n - 2, len) + 1, 1) + in + fbGain * out);
-else
-    buffer(indexC, 1) = in + fbGain * out;
-end
+    % Store the current output in appropriate index
+    % LPF in feedback loop - Two point moving average
+    if LPF == true
+        buffer(indexC, 1) = (1 / 2) * (buffer(mod(n - 2, len) + 1, 1) + in + fbGain * out);
+    else
+        buffer(indexC, 1) = in + fbGain * out;
+    end
 
 end
 
