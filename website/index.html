@@ -4,38 +4,96 @@
 <head>
     <link rel="stylesheet" href="./libs/bootstrap.min.css">
     <link rel="stylesheet" href="./style.css">
-    <!-- <script src="./libs/bootstrap.bundle.min.js"></script> -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Physical Modelling Synthesis Assignment</title>
 </head>
 
-<body style="height: 100vh;">
+<body style="font-size: 125%;" class="h-100">
     <div class="container-fluid text-light h-100 w-100 mh-100 mw-100" style="background-color: rgba(33, 37, 41, 0.975)">
         <div class="bg-dark h-100 mh-100 p-4" style="margin: 0 12% 0 12%;">
             <div>
                 <div class="d-flex justify-content-between">
                     <h1>ELE00102M: Physical Modelling Synthesis</h1>
-                    <h4 class="mt-3">Y3846756</h4>
+                    <p class="h4 mt-3">Y3846756</p>
                 </div>
                 <h2>Sound Synthesis Report</h2>
                 <hr>
             </div>
             <div>
                 <h3>1. Introduction</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>Software implementations of physical models offer exceptional quality and expressivity when imitating real acoustic instruments [1]. These implementations replicate the causal interactions of vibrating systems and can accurately reproduce the idiosyncrasies and unique characteristics of an instrument [2]. Traditional physical modelling starts with a continuous differential equation of the mechanical system and then numerically discretises this using finite difference methods, such as the Finite Difference Time Domain (FDTD) approach. Finite difference solutions work by splitting sections of the model into a 1D line, or 2D or 3D mesh of nodes, then approximating the relevant differential equation by a finite difference equivalent calculated based on values at neighbouring points, and taking into account the given boundary and initial conditions of the system [3]. This effectively “brute forces” the calculation and is therefore very computationally demanding, meaning that historically it has been an unfeasible approach, especially for real-time systems [1].</p>
+                <p>A more computationally friendly alternative is the digital waveguide methods. The digital waveguide method attempts to explicitly simulate the travelling waves of a system as opposed to a real, physical variable within the system [1]. The 1D digital waveguide for an ideal, infinite, undamped string can be demonstrated by first considering the differential wave equation for this ideal string:</p>
+                <p style="font-size: 125%;">
+                    $$\frac{\partial y(t, x)}{\partial t^2} = c^2\frac{\partial y(t, x)}{\partial x^2}$$
+                </p>
+                <p>This can then be solved by the travelling wave solution:</p>
+                <p style="font-size: 125%;">
+                    $$y(t, x) = y^+(t - \frac{x}{c}) + y^-(t + \frac{x}{c})$$
+                </p>
+                <p>where \(y^-\) denotes the left travelling wave and \(y^+\)denotes the right travelling wave. This can then be easily modified to use discrete sampling points:</p>
+                <figure style="font-size: 125%;">
+                    $$y(nT, mX) = y^+(n - m) + y^-(n + m)$$
+                </figure>
+                <p>
+                    where \(nT\) is the sampling interval and \(mX\) are the sampling points, where \(X=cT\) and \(c≈343 m/s\) (the speed of sound). A simple example of some MATLAB&#174; code implementing this is shown in Figure 1, alongside the wave this produces on the string in Figure 2. The red and blue waves show the left and right travelling waves, and the yellow wave shows the total displacement of the string.
+                </p>
+                <div class="d-flex justify-content-around">
+                    <figure class="figure">
+                        <pre class="figure-img" style="overflow-y: hidden;">
+                            <code>
+
+for n = 1:N
+    % Shift samples along left delay line, use dummy for last value
+    left = [left(2:L), 0];
+    % Shift samples along right delay line and add reflection from left
+    % delay line to the start
+    right = [-left(1), right(1:L-1)];
+    % Add reflection from end of right delay line to end of left delay line
+    left(L) = -right(L);
+    % Sum the outputs of the two delay lines at pickup points
+    out(n) = (left(pickup) + right(pickup));
+end
+                            </code>
+                        </pre>
+                        <figcaption style="font-style: italic;" class="figure-caption text-light">Figure 1: Example block of MATLAB code showing the main loop in a 1D Digital Waveguide implementation.</figcaption>
+                    </figure>
+                    <figure class="figure">
+                        <img class="figure-img" height="254px" width="500px" src="./string-pluck.gif" alt="">
+                        <figcaption style="font-style: italic;" class="figure-caption text-light">Figure 2: Simulated travelling waves and wave displacement on an ideal string.</figcaption>
+                    </figure>
+                </div>
+                <p>
+                    This makes it simple and efficient to implement in software using delay lines and is what was used in Yamaha’s VL1 synthesizer from 1993 [4]. There are also modern commercially available physical modelling software plugins, such as Pianoteq, an award-winning virtual instrument targeted at primarily modelling pianos [5]. 
+                </p>
+                <p>
+                    The 1D digital waveguide has also been expanded to 2D and 3D models [6]. The 2D model for an ideal membrane takes several of the bi-directional delay lines of the 1D model and connects these together at lossless, 4-port scattering junctions [6]. A block diagram showing a small section of a 2D digital waveguide mesh is shown in Figure 3.
+                </p>
+                <figure class="figure w-100">
+                    <div class="d-flex">
+                        <img class="figure-img mx-auto" src="./2d-waveguide-mesh.png" alt="">
+                    </div>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 3: Block diagram of a section of a 2D digital waveguide mesh [6].</figcaption>
+                </figure>
+                <p>
+                    Physical modelling synthesizers in the commercial space compete most directly with samplers, although they do also have some competition with other synthesis algorithms such as FM synthesis. The primary advantage of physical models over sample-based approaches for realistic acoustic instrument simulation lies in the flexibility of the parameters the player can control in the model, allowing for highly expressive performances and a bigger range of timbral variety from a single model [1, 7]. There is also the benefit that physical models use very little storage and have low RAM requirements when compared to industry standard sampling alternatives. For example, the huge difference is clear when comparing the size of Pianoteq, a physical modelling instrument, with Keyscape, an industry standard piano sampling library. Pianoteq requires just 50MB of storage space on the user’s computer, compared to Keyscape’s 77GB, and Pianoteq also requires just 256MB of RAM, compared to Keyscape’s minimum requirement of 8GB [8, 9, 10]. However, this does not mean that physical models are without issue. Physical modelling synthesizers generally utilise the CPU more heavily than sampling-based approaches, but with modern computing power this has become less of an issue. The biggest problem with physical modelling synthesis is the complexity involved with designing efficient algorithms for accurate and realistic sounding models of complex instruments with a wide range of parameters, particularly when compared with sampling based approaches which simply use digital audio playback along with post processing techniques such as filtering for timbral changes.
+                </p>
+                <p>
+                    This article will detail the implementation of a physics inspired system of a resonated flute played in a virtual acoustic space, from the raw mathematics to the MATLAB code. There will be analysis performed to detail the success of the implementation and verify that it behaves as expected, as well as a range of “presets” showing the range of possible sounds it can create and discussion surrounding the limitations and potential future work of the project.
+                </p>                
             </div>
             <div>
                 <h3>2. System</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>
+                    The resonated flute in the virtual acoustic space is built as 3 distinct parts, with each part then connected to one another. The modelled flute is based on the physical model for a slide flute, using the digital waveguide approach to synthesize the travelling waves within the bore of the flute. The pitch of this is then adjusted by modifying the length of the delay line, thus in effect modifying the length of the bore. This model also features periodic amplitude modulation, or tremolo, to add to the realism of the sound.  The model features four adjustable parameters which alter the timbre of the model: pressure, which simulates how hard the flute is blown into; breath, which simulates how much “breath” sound comes through the flute; attack time, which affects the onset time of the note; and tremolo depth, the level of fluctuation in amplitude. 
+                </p>
+                <p>
+                    The flute is then convolved by the impulse response of a physically modelled 2D absorbing membrane. This membrane is modelled using the 2D digital waveguide mesh approach and simulates the travelling waves across the membrane in all directions. The size of the mesh is adjustable, as well as the size and location of the excitation point, the position that the output is sampled from, and the absorption coefficient at the boundaries. Convolving the output of the flute signal with the impulse response of this effectively causes the sound of the flute to be resonated by the membrane. There is also a mix control which balances the mix between dry sound and the convolved signal. 
+                </p>
+                <p>
+                    The output of this is then processed through a virtual acoustic space reverberation, implemented based on the Moorer reverb algorithm using comb and all-pass filters, as well as a tapped delay line for the early reflections. The early reflection times and the gains of these reflections can be altered, as well as the feedback of the comb filters, which controls the reverberation time. There is also a mix control which balances the dry, direct sound with the reverberated signal. 
+                </p>
             </div>
             <div>
                 <h3>3. Examples</h3>
@@ -43,7 +101,8 @@
                     et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
                     aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
                     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.</p>
+                    culpa qui officia deserunt mollit anim id est laborum.
+                </p>
             </div>
             <div>
                 <h3>4. Presets</h3>
@@ -51,10 +110,20 @@
                     et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
                     aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
                     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.</p>
+                    culpa qui officia deserunt mollit anim id est laborum.
+                </p>
             </div>
             <div>
                 <h3>5. Conclusion</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+                    culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+            </div>
+            <div>
+                <h3>6. Limitations & Future Work</h3>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
                     et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
                     aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
@@ -64,7 +133,12 @@
             <div>
                 <h3>6. References</h3>
                 <ol class="ref-list">
-                    <li>Test</li>
+                    <li>O. Smith, ‘Physical Modeling Using Digital Waveguides’, Computer Music Journal, vol. 16, no. 4, pp. 74–91, 1992.</li>
+                    <li>G. Loy, Musimathics, Volume 2. The MIT Press, 2007.</li>
+                    <li>M. N. O. Sadiku, Numerical Techniques in Electromagnetics. CRC Press, 2000.</li>
+                    <li>Stanford University News Service, ‘Music synthesis approaches sound quality of real instruments’, 1994 [Online]. Available: https://news.stanford.edu/pr/94/940607Arc4222.html.</li>
+                    <li>Modartt, Modartt - Pianoteq 7. [Online]. Available: https://www.modartt.com/pianoteq. [Accessed: 29 Dec. 2020].</li>
+                    <li>S. Van Duyne and J. O. Smith, ‘The 2-D digital waveguide mesh’, in Proceedings of IEEE Workshop on Applications of Signal Processing to Audio and Acoustics, 1993, pp. 177–180.</li>
                 </ol>
             </div>
         </div>

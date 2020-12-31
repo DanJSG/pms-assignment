@@ -15,10 +15,10 @@ note3 = flute(659, crotchetDuration, flutePreset.breath, flutePreset.pressure, f
 note4 = flute(349, crotchetDuration * 2, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
 note5 = flute(329, crotchetDuration * 2, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
 note6 = flute(311, crotchetDuration * 2, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
-note7 = flute(392, crotchetDuration, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
-note8 = flute(466, crotchetDuration, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
-note9 = flute(349, crotchetDuration, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
-note10 = flute(440, crotchetDuration, flute2Preset.breath, flute2Preset.pressure, flute2Preset.attack, flute2Preset.vibDepth, Fs);
+note7 = flute(392, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
+note8 = flute(466, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
+note9 = flute(349, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
+note10 = flute(440, crotchetDuration, flutePreset.breath, flutePreset.pressure, flutePreset.attack, flutePreset.vibDepth, Fs);
 chord = zeros(clipLength, 1);
 for n=1:6
     startSample = floor((n - 1) * length(note1) + 1);
@@ -40,5 +40,7 @@ resonated = resonate(chord, 0.8, resPreset.dimensions, ...
     revPreset.earlyReflectionsPath);
 
 plot(reverbed);
+
+audiowrite("flutechords.wav", reverbed, Fs);
 
 sound(reverbed, Fs);

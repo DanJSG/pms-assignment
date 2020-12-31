@@ -79,12 +79,15 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
         [irApf2, apfBuffer2] = apf(irApf1, apfBuffer2, n, apfDelayTime2, apfGain2);
 
         % Update current sample of the impulse response
-        irOutput(n, 1) = irApf2;
+        irOutput(n, 1) = irEarlyReflections;
 
     end
 
     ir = irOutput;
-
+    
+    figure(2)
+    plot(ir);
+    
     % Reverberate
     for n = 1:nOutputSamples
 

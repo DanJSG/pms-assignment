@@ -90,7 +90,7 @@ function[output] = resonate(input, mix, dimensions, excitationPoint, ...
         end
 
         % Update the membrane response
-        membraneResponse(n) = nextDisplacement(outputPoint(1), outputPoint(2));
+        membraneResponse(n) = currentDisplacement(outputPoint(1), outputPoint(2));
 
         % Update membrane's mesh history
         prevDisplacement = currentDisplacement;
