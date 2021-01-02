@@ -114,7 +114,8 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
 
     % Mix direct (dry) sound with reverberated signal and normalize between
     % -0.98 and 0.98
-    output = normalize(((1 - mix) * in) + (mix * output), 'range', [-0.98, 0.98]);
+%     output = normalize(((1 - mix) * in) + (mix * output), 'range', [-0.98, 0.98]);
+    output = ((1 - mix) * in) + (mix * output);
     
 end
 

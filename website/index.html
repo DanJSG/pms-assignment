@@ -10,7 +10,7 @@
     <title>Physical Modelling Synthesis Assignment</title>
 </head>
 
-<body style="font-size: 125%;" class="h-100">
+<body style="font-size: 125%; text-align: justify;" class="h-100">
     <div class="container-fluid text-light h-100 w-100 mh-100 mw-100" style="background-color: rgba(33, 37, 41, 0.975)">
         <div class="bg-dark h-100 mh-100 p-4" style="margin: 0 12% 0 12%;">
             <div>
@@ -86,22 +86,100 @@ end
             <div>
                 <h3>2. System</h3>
                 <p>
-                    The resonated flute in the virtual acoustic space is built as 3 distinct parts, with each part then connected to one another. The modelled flute is based on the physical model for a slide flute, using the digital waveguide approach to synthesize the travelling waves within the bore of the flute. The pitch of this is then adjusted by modifying the length of the delay line, thus in effect modifying the length of the bore. This model also features periodic amplitude modulation, or tremolo, to add to the realism of the sound.  The model features four adjustable parameters which alter the timbre of the model: pressure, which simulates how hard the flute is blown into; breath, which simulates how much “breath” sound comes through the flute; attack time, which affects the onset time of the note; and tremolo depth, the level of fluctuation in amplitude. 
+                    The resonated flute in the virtual acoustic space is built as 3 distinct parts, with each part then connected to one another. The modelled flute is based on the physical model for a slide flute, using the digital waveguide approach to synthesize the travelling waves within the bore of the flute. The equation for this was shown in section 1 of the article. The pitch of this is then adjusted by modifying the length of the delay line, thus in effect modifying the length of the bore. This model also features periodic amplitude modulation, or tremolo, to add to the realism of the sound.  The model features four adjustable parameters which alter the timbre of the model: pressure, which simulates how hard the flute is blown into; breath, which simulates how much “breath” sound comes through the flute; attack time, which affects the onset time of the note; and tremolo depth, the level of fluctuation in amplitude. The block diagram for a basic digital waveguide implementation of a slide flute is shown in Figure 4.
+                </p>
+                <figure class="figure w-100">
+                    <div class="d-flex">
+                        <img class="figure-img mx-auto" src="./basic-flute-block-diagram.PNG" alt="">
+                    </div>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 4: Block diagram of a simple digital waveguide slide flute [11].</figcaption>
+                </figure>
+                <p>
+                    The implementation detailed in this article has expanded upon the model from this block diagram by adding a flow envelope to control the amplitude of the input noise over time, as well as adding a third delay line of half the length of the existing at the input of the system, to simulate the delay of the player blowing across the mouthpiece of the flute [12]. The block diagram for this extended model is shown in Figure 5.
+                </p>
+                <figure class="figure w-100">
+                    <div class="d-flex">
+                        <img class="figure-img mx-auto" src="./extended-flute-block-diagram.PNG" alt="">
+                    </div>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 5: Block diagram of an extended digital waveguide slide flute [12].</figcaption>
+                </figure>
+                <p>
+                    The flute is then convolved by the impulse response of a physically modelled 2D absorbing membrane. This membrane is modelled using the FDTD equation and simulates the acoustic pressure across the membrane in all directions. The membrane’s response is implemented by considering the 2D differential wave equation:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$\frac{\partial u(t, x, y)}{\partial t^2} = c^2 \left(\frac{\partial^2 u(t, x, y)}{\partial x^2} + \frac{\partial^2 u(t, x, y)}{\partial y^2}\right)$$
+                </figure>
+                <p>
+                    and then discretising this using the FDTD method:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$u_{x, y}^{n+1} = Au_{x, y}^n + B(u_{x+1, y}^n + u_{x-1, y}^n + u_{x, y+1}^n + u_{x, y-1}^n) + Cu_{x, y}^{n-1}$$
+                </figure>
+                <p>
+                    where \(u_{l,h}^n\) is the acoustic pressure at coordinate \((l,h)\) on the membrane at sample point \(n\), and \(A\), \(B\), and \(C\) are the absorption coefficients. The size of the membrane is adjustable, as well as the size and location of the excitation point, the position that the output is sampled from, and the absorption coefficient at the boundaries. Convolving the output of the flute signal with the impulse response of this effectively causes the sound of the flute to be resonated by the membrane. There is also a mix control which balances the mix between dry sound and the convolved signal. 
                 </p>
                 <p>
-                    The flute is then convolved by the impulse response of a physically modelled 2D absorbing membrane. This membrane is modelled using the 2D digital waveguide mesh approach and simulates the travelling waves across the membrane in all directions. The size of the mesh is adjustable, as well as the size and location of the excitation point, the position that the output is sampled from, and the absorption coefficient at the boundaries. Convolving the output of the flute signal with the impulse response of this effectively causes the sound of the flute to be resonated by the membrane. There is also a mix control which balances the mix between dry sound and the convolved signal. 
+                    The output of this is then processed through a virtual acoustic space reverberation, implemented based on the Moorer reverb algorithm using comb and all-pass filters, as well as a tapped delay line for the early reflections. The early reflection times and the gains of these reflections can be altered, as well as the feedback of the comb filters, which controls the reverberation time. There is also a mix control which balances the dry, direct sound with the reverberated signal. A diagram for the reverberation network is shown in Figure 6. 
                 </p>
-                <p>
-                    The output of this is then processed through a virtual acoustic space reverberation, implemented based on the Moorer reverb algorithm using comb and all-pass filters, as well as a tapped delay line for the early reflections. The early reflection times and the gains of these reflections can be altered, as well as the feedback of the comb filters, which controls the reverberation time. There is also a mix control which balances the dry, direct sound with the reverberated signal. 
-                </p>
+                <figure class="figure w-100">
+                    <div class="d-flex">
+                        <img class="figure-img mx-auto" width="550px" src="./moorer-reverb-with-er.PNG" alt="">
+                    </div>
+                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 6: Digital reverberation network diagram, based on a reverberation network from [13] with the addition of the early reflections block (ER) [14]. Cn represent comb filters and An represent all pass filters.</figcaption>
+                </figure>
             </div>
             <div>
                 <h3>3. Examples</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
+                <p>
+                    The individual sections of the system will now be heard and analysed, and the interactions between these shown. Table 1 has an audio snippet of the flute section of the model playing an A4 (440Hz) along with its corresponding spectrogram.
+                </p>
+                <figure>
+                    <table class="table text-light">
+                        <tr>
+                            <th>Audio</th>
+                            <th>Waveform</th>
+                            <th>Spectrogram</th>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">
+                                <audio controls src="./audio/a4-flute-only.wav">
+                            </td>
+                            <td>
+                                <img width="500px" src="./a4-flute-waveform.PNG" alt="">
+                            </td>
+                            <td>
+                                <img width="500px" src="./a4-flute-spectrogram.PNG" alt="">
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Table 1: Table providing an audio file of the modelled flute playing an A4, along with the corresponding waveform and spectrogram.</figcaption>
+                </figure>
+                <p>
+                    This spectrogram shows that the fundamental frequency lies in approximately the right area of the spectrum for a 440Hz A4 but is roughly 20Hz flat. This is due to pitch quantization which occurs during the discretisation process, where the integer length of the delay lines causes inaccuracies in pitch. In an ideal case, without rounding errors and quantized delay lines, the number of samples in the delay line could be calculated as follows:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$ N_{left} = N_{right} = \left(0.25 \times \frac{F_s}{f_0}\right) = 0.25 \times \frac{48000}{440} = 27.\dot{2}\dot{7} $$
+                </figure style="font-size: 125%;">
+                <p>
+                    The total bore length is therefore the summation of the length of both delay:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$ N_{bore} = N_{left} + N_{right} = 54.545\ samples $$
+                </figure>
+                <p>
+                    Then calculating the oscillation period based on twice the delay period of the delay line [15]:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$ T_N = 2 \times N_{bore} = 2 \times 54.545 = 109.091\ samples $$
+                </figure>
+                <p>
+                    Then finally converting this to metres and thus calculating the fundamental:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$ f_0 = \frac{1}{\frac{T_N}{F_s}} = \frac{1}{\frac{109.091}{48000}}= 440Hz $$
+                </figure>
+                <p>
+                    The harmonic series visible in the spectrogram also matches that of a flute, where the harmonics are integer multiples of the fundamental frequency [16]. Table 2 shows the fundamental and first 4 harmonics.
                 </p>
             </div>
             <div>

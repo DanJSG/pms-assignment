@@ -29,25 +29,39 @@ Fs = 48000;
 
 % sound(fluteAnalysis, Fs);
 
-% waveform1 = ...
-%     rrflute(220, 1, flutePreset.breath, flutePreset.pressure, ...
-%     flutePreset.attack, flutePreset.vibDepth, resPreset.dimensions, ... 
-%     resPreset.excitationPoint, resPreset.excitationSize, 0.025, ...
-%     resPreset.outputPoint, 4096, revPreset.feedback, ... 
-%     revPreset.earlyReflectionsPath, 1, 1, Fs);
-waveform2 = ...
+waveform = ...
     rrflute(440, 1, flutePreset.breath, flutePreset.pressure, ...
     flutePreset.attack, flutePreset.vibDepth, resPreset.dimensions, ... 
     resPreset.excitationPoint, resPreset.excitationSize, 0.025, ...
     resPreset.outputPoint, 8192, revPreset.feedback, ... 
-    revPreset.earlyReflectionsPath, 1, 0.7, Fs);
-% waveform3 = ...
-%     rrflute(880, 1, flutePreset.breath, flutePreset.pressure, ...
-%     flutePreset.attack, flutePreset.vibDepth, resPreset.dimensions, ... 
-%     resPreset.excitationPoint, resPreset.excitationSize, 0.025, ...
-%     resPreset.outputPoint, 4096, revPreset.feedback, ... 
-%     revPreset.earlyReflectionsPath, 1, 1, Fs);
+    revPreset.earlyReflectionsPath, 0, 0, Fs);
 
-sound( waveform2, Fs);
+windowLength = 4096;
+window = hamming(windowLength)';
+analysisWindow = waveform(1:windowLength) .* window;
 
-audiowrite("example.wav", waveform2, Fs);
+nFft = 8192;
+freqResponse = abs(fft(analysisWindow, nFft));
+freqResponse = freqResponse(1:nFft / 2);
+fDomain = linspace(0, Fs / 2, nFft / 2);
+
+figure(1);
+plot(fDomain, freqResponse);
+xlim([80, 4000]);
+xlabel("Frequency (Hz)");
+ylabel("Amplitude");
+title("Frequency Spectrum of A4 on Modelled Flute");
+
+tDomain = linspace(0, 1, length(waveform));
+
+figure(2);
+plot(tDomain, waveform);
+xlabel("Time (s)");
+ylabel("Amplitude");
+title("Waveform of A4 on Modelled Flute");
+
+
+% semilogx(fDomain, abs(fft(fluteAnalysis, nFft))/max(abs(fft(fluteAnalysis, nFft))));
+
+sound(waveform, Fs);
+% audiowrite("example.wav", waveform, Fs);
