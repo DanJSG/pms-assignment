@@ -12,7 +12,7 @@
 %   boundaryGain : the gain at the boundaries of the membrane
 %   outputPoint : the point on the membrane the output is taken from
 %   nMembraneSamples : the number of samples on the membrane
-function[output] = resonate(input, mix, dimensions, excitationPoint, ...
+function[output, ir] = resonate(input, mix, dimensions, excitationPoint, ...
     excitationSize, boundaryGain, outputPoint, nMembraneSamples)
 
     % Number of points in X and Y directions
@@ -36,6 +36,8 @@ function[output] = resonate(input, mix, dimensions, excitationPoint, ...
     excitationImpulse =  5 * hanning(excitationSize * 2 + 1);
     excitationShape = excitationImpulse * excitationImpulse';
 
+    
+    
     % Load the shape into the centre of the mesh at current timestep (t) 
     currentDisplacement(excitationRangeX, excitationRangeY) = excitationShape;
     % Let the mesh at the previous timestep, t-1 have the same shape.
@@ -46,9 +48,9 @@ function[output] = resonate(input, mix, dimensions, excitationPoint, ...
 
     % The boundary coefficients
     boundaryCoeff1 = root2 / (root2 + boundaryGain);
-    boundaryCoeff2 = 1/(2.0 + (root2 * boundaryGain)); 
+    boundaryCoeff2 = 1 / (2.0 + (root2 * boundaryGain)); 
     boundaryCoeff3 = (boundaryGain - root2) / (boundaryGain + root2);
-
+       
     % Main loop for calculating and updating membrane displacements. Loops for
     % the number of membrane samples defined in the function argument.
     for n=1:nMembraneSamples
@@ -101,7 +103,9 @@ function[output] = resonate(input, mix, dimensions, excitationPoint, ...
     % Create a low pass filter and low pass filter the response of the membrane
     lpf = fir1(20, 0.25);
     filteredMembraneResponse = filter(lpf, 1, membraneResponse);
-
+    
+    ir = membraneResponse;
+    
     % Convolve the input signal 
     output = conv(input, filteredMembraneResponse);
 

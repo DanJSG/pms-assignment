@@ -24,7 +24,7 @@
 %   resMix : the dry/wet mix of the resonated sound and the flute input
 %   revMix : the dry/wet mix of the reverberant sound and the direct sound
 %   
-function[output] = rrflute(frequency, duration, breathLevel, pressure, ...
+function[output, membraneResponse, reverbResponse] = rrflute(frequency, duration, breathLevel, pressure, ...
     attackTime, vibDepth, resDimensions, resExcitationPoint, ...
     resExcitationSize, resBoundaryGain, resOutputPoint, nMembraneSamples, ...
     revFeedback, revEarlyReflectionsPath, resMix, revMix, Fs)
@@ -37,16 +37,18 @@ function[output] = rrflute(frequency, duration, breathLevel, pressure, ...
     if resMix > 0
         % Convolve the flute sound through an absorbing membrane model with the
         % given parameters
-        resonated = resonate(note, resMix, resDimensions, resExcitationPoint, ...
+        [resonated, membraneResponse] = resonate(note, resMix, resDimensions, resExcitationPoint, ...
             resExcitationSize, resBoundaryGain, resOutputPoint, nMembraneSamples);
     else
+        membraneResponse = [];
         resonated = note;
     end
     
     % Add reverb to the resonant sound and use this as the output
     if revMix ~= 0
-        output = reverberate(resonated, Fs, revMix, revFeedback, revEarlyReflectionsPath);
+        [output, reverbResponse] = reverberate(resonated, Fs, revMix, revFeedback, revEarlyReflectionsPath);
     else
+        reverbResponse = [];
         output = resonated;
     end
     

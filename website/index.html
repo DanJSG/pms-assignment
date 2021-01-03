@@ -158,7 +158,7 @@ end
                     This spectrogram shows that the fundamental frequency lies in approximately the right area of the spectrum for a 440Hz A4 but is roughly 20Hz flat. This is due to pitch quantization which occurs during the discretisation process, where the integer length of the delay lines causes inaccuracies in pitch. In an ideal case, without rounding errors and quantized delay lines, the number of samples in the delay line could be calculated as follows:
                 </p>
                 <figure style="font-size: 125%;">
-                    $$ N_{left} = N_{right} = \left(0.25 \times \frac{F_s}{f_0}\right) = 0.25 \times \frac{48000}{440} = 27.\dot{2}\dot{7} $$
+                    $$ N_{left} = N_{right} = \left(0.25 \times \frac{F_s}{f_0}\right) = 0.25 \times \frac{48000}{440} = 27.\dot{2}\dot{7}\ samples$$
                 </figure style="font-size: 125%;">
                 <p>
                     The total bore length is therefore the summation of the length of both delay:
@@ -176,11 +176,310 @@ end
                     Then finally converting this to metres and thus calculating the fundamental:
                 </p>
                 <figure style="font-size: 125%;">
-                    $$ f_0 = \frac{1}{\frac{T_N}{F_s}} = \frac{1}{\frac{109.091}{48000}}= 440Hz $$
+                    $$ f_0 = \frac{1}{\frac{T_N}{F_s}} = \frac{1}{\frac{109.091}{48000}}= 440\ Hz $$
                 </figure>
                 <p>
                     The harmonic series visible in the spectrogram also matches that of a flute, where the harmonics are integer multiples of the fundamental frequency [16]. Table 2 shows the fundamental and first 4 harmonics.
                 </p>
+                <figure>
+                    <table class="w-50 mx-auto table text-light">
+                        <tr>
+                            <th>
+                                Harmonic
+                            </th>
+                            <th>
+                                Relation to Fundamental
+                            </th>
+                            <th>
+                                Measured Frequency
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                1<sup>st</sup>
+                            </td>
+                            <td>
+                                \(f_0\)
+                            </td>
+                            <td>
+                                421.98 Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                2<sup>nd</sup>
+                            </td>
+                            <td>
+                                \(2f_0\)
+                            </td>
+                            <td>
+                                843.96 Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                3<sup>rd</sup>
+                            </td>
+                            <td>
+                                \(3f_0\)
+                            </td>
+                            <td>
+                                1265.93 Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                4<sup>th</sup>
+                            </td>
+                            <td>
+                                \(4f_0\)
+                            </td>
+                            <td>
+                                1687.91 Hz
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 2: Table showing measured harmonic values alongside their expected relation to the fundamental frequency.</figcaption>
+                </figure>
+                <p>
+                    The small levels of inharmonic frequencies across the spectrum show the noise from the breath input to the system.
+                </p>
+                <p>
+                    An example audio clip of the absorbing membrane’s response can be heard in Table 3, and the corresponding waveform and spectrogram can also be seen.
+                </p>
+                <figure>
+                    <table class="table text-light">
+                        <tr>
+                            <th>Audio</th>
+                            <th>Waveform</th>
+                            <th>Spectrogram</th>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">
+                                <audio controls src="./audio/membrane-response.wav">
+                            </td>
+                            <td>
+                                <img width="500px" src="./membrane-waveform.PNG" alt="">
+                            </td>
+                            <td>
+                                <img width="473px" src="./membrane-spectrum.PNG" alt="">
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Table 3: Table providing an audio file of the modelled absorbing membrane of length 66cm and width 12cm, along with the corresponding waveform and spectrogram.</figcaption>
+                </figure>
+                <p>
+                    The spectrogram shown in Table 3 clearly shows the resonant modes of the membrane through the repeated spikes. The values of these are shown in Table 4. These modes can be altered by changing the dimensions of the membrane, the position or size of the excitation, and the position the output is measured from.
+                </p>
+                <figure>
+                    <table class="table w-50 mx-auto text-light">
+                        <tr>
+                            <th>
+                                Resonant Peak
+                            </th>
+                            <th>
+                                Frequency
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>216.85 Hz</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                2
+                            </td>
+                            <td>
+                                433.70 Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                3
+                            </td>
+                            <td>
+                                656.41 Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                4
+                            </td>
+                            <td>
+                                890.84 Hz
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                5
+                            </td>
+                            <td>
+                                1131.1 Hz
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 4: Table showing the resonant mode peak frequencies from the modelled absorbing membrane of length 66cm and width 12cm.</figcaption>
+                </figure>
+                <p>
+                    When the output of the modelled flute playing an A4 is convolved with the response of the membrane, this alters the frequency response, boosting it at the resonant mode peaks and attenuating it at other points. This can be seen in Figure 7, where the convolved signal’s frequency spectrum has a higher peak at the resonant frequency than the non-convolved signal, as well as having lower values at other, non-resonant points of the membrane’s frequency response.
+                </p>
+                <figure class="figure w-100">
+                    <div class="d-flex">
+                        <img class="figure-img mx-auto" width="550px" src="./convolved-vs-not-spectrum.PNG" alt="">
+                    </div>
+                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 7: Spectrogram showing the frequency response of the membrane, compared to the frequency responses of the non-convolved flute and the convolved flute. The peaks have been labelled with dotted lines to highlight the difference.</figcaption>
+                </figure>
+                <p>
+                    The third section of the system is the Moorer reverb implementation. An impulse response of a room 30 metres long and 20 metres wide can be seen and heard in Table 5, along with the isolated early reflections. 
+                </p>
+                <figure>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Audio
+                            </th>
+                            <th>
+                                Waveform
+                            </th>
+                            <th>
+                                Early Reflections
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">
+                                <audio controls src="./audio/big-room-ir.wav">
+                            </td>
+                            <td>
+                                <img src="./reverb-waveform.PNG" width="500px" alt="">
+                            </td>
+                            <td>
+                                <img src="./early-reflections.PNG" width="499px" alt="">
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 5: Table showing the impulse response and early reflections of a simulated room which is 30 metres long and 20 metres wide.</figcaption>
+                </figure>
+                <p>
+                    The isolated early reflections show that the tapped delay line is behaving as expected, with the reflections falling at the correct points in the time domain. The early reflection times are shown in Table 6, along with the given early reflection times. The given times were calculated based on the delay times and approximate amplitudes gathered from [19]. 
+                </p>
+                <figure>
+                    <table class="table text-light w-50 mx-auto">
+                        <tr>
+                            <th>
+                                Given ER Time (ms)
+                            </th>
+                            <th>
+                                Measured ER Time (ms)
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                65.20
+                            </td>
+                            <td>
+                                65.1889
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                81.90
+                            </td>
+                            <td>
+                                81.8975
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                83.70
+                            </td>
+                            <td>
+                                83.6892
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                85.80
+                            </td>
+                            <td>
+                                85.7935
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                89.30
+                            </td>
+                            <td>
+                                89.2935
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                103.2
+                            </td>
+                            <td>
+                                103.190
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                104.7
+                            </td>
+                            <td>
+                                104.690
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                106.1
+                            </td>
+                            <td>
+                                106.086
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                107.5
+                            </td>
+                            <td>
+                                107.502
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                116.6
+                            </td>
+                            <td>
+                                116.586
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                131.000
+                            </td>
+                            <td>
+                                131.003
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                233.500
+                            </td>
+                            <td>
+                                233.521
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 6: Table showing the target early reflection times compared to the measured early reflection times.</figcaption>
+                </figure>
+                <p>
+                    Changing the early reflection times changes the size and shape of the room being simulated. Adjusting the comb filter feedback gain also has an impact on the perceived room size and can vastly affect the \(RT_{60}\) of the system. The \(RT_{60}\)  can be estimated by plotting the impulse response normalized to unity gain (0dB), plotting a horizontal line at -60dB against this and then finding the point at which the amplitude does not rise above -60dB again. Figure 8 shows this plot for the simulated room shown in Table 5, with the \(RT_{60}\) of approximately 845ms labelled.
+                </p>
+                <figure class="figure w-100">
+                    <div class="d-flex">
+                        <img class="figure-img mx-auto" src="./rt60-estimation.PNG" alt="">
+                    </div>
+                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 8: \(RT_{60}\) estimation using a normalized impulse response plot for a 30 metre long and 20 metre wide simulated room.</figcaption>
+                </figure>
             </div>
             <div>
                 <h3>4. Presets</h3>
@@ -208,7 +507,7 @@ end
                     cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
                     culpa qui officia deserunt mollit anim id est laborum.</p>
             </div>
-            <div>
+            <div style="text-align: left;" >
                 <h3>6. References</h3>
                 <ol class="ref-list">
                     <li>O. Smith, ‘Physical Modeling Using Digital Waveguides’, Computer Music Journal, vol. 16, no. 4, pp. 74–91, 1992.</li>

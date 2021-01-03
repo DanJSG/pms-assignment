@@ -15,11 +15,11 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
     earlyReflectionVals = readmatrix(reflectionPresetPath);
 
     % Zero pad the file so the output will include the reverb tail
-    in = zeros(length(input) + (Fs * 3), 1);
+    in = zeros(length(input) + Fs, 1);
     in(1:length(input)) = input;
 
     % Define impulse excitation for obtaining impulse response
-    impulse = zeros(Fs * 3, 1);
+    impulse = zeros(Fs, 1);
     impulse(1) = 1;
 
     % Initialize Main Output Signal
@@ -38,9 +38,15 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
     buffer2 = zeros(maxDelay, 1); 
     buffer3 = zeros(maxDelay, 1); 
     buffer4 = zeros(maxDelay, 1); 
-
+    
+    % Get the longest early reflection time in milliseconds, discretise it
+    % and add 10 samples to it, then round it up, to be used as the buffer
+    % length of the early reflections buffer
+    longestEarlyReflection = ... 
+        ceil((earlyReflectionVals(length(earlyReflectionVals), 1) * Fs) + 10);
+    
     % Initialise the Early Reflection Unit Tapped Delay Line
-    earlyReflectionsBuffer = zeros(maxDelay, 1);
+    earlyReflectionsBuffer = zeros(longestEarlyReflection, 1);
 
     % Delay times for the comb filters in samples
     delay1 = floor(0.0297 * Fs); 
@@ -60,9 +66,11 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
     apfGain1 = 0.875;
     apfGain2 = 0.75;
 
+    disp(earlyReflectionVals);
+    
     % Impulse Response
     for n=1:nIrSamples
-
+    
         [irEarlyReflections, earlyReflectionsBuffer] = earlyreflections(impulse(n, 1), earlyReflectionsBuffer, Fs, n, earlyReflectionVals);
 
         % Early Reflection Tapped Delay Line
@@ -82,11 +90,8 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
         irOutput(n, 1) = irEarlyReflections;
 
     end
-
-    ir = irOutput;
     
-    figure(2)
-    plot(ir);
+    ir = irOutput;
     
     % Reverberate
     for n = 1:nOutputSamples
