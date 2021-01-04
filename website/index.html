@@ -131,8 +131,7 @@ end
             <div>
                 <h3>3. Examples</h3>
                 <p>
-                    The individual sections of the system will now be heard and analysed, and the interactions between these shown. Table 1 has an audio snippet of the flute section of the model playing an A4 (440Hz) along with its corresponding spectrogram.
-                </p>
+                    The individual sections of the system will now be heard and analysed, and the interactions between these shown. The presets used in this section are the “Breathy” preset for the flute, the “Flute” preset for the resonant membrane, and the “BigRoom” preset for the room simulation. These presets will be discussed further in Section 4. Table 1 has an audio snippet of the flute section of the model playing an A4 (440Hz) along with its corresponding spectrogram.                </p>
                 <figure>
                     <table class="table text-light">
                         <tr>
@@ -480,14 +479,245 @@ end
                     </div>
                     <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 8: \(RT_{60}\) estimation using a normalized impulse response plot for a 30 metre long and 20 metre wide simulated room.</figcaption>
                 </figure>
+                <p>
+                    The audio, waveform and spectrogram of the fully connected system is shown in Table 7. The waveform shows the extended reverb tail and pre-delay occurring from the simulated room when compared to the waveform in Table 1, and the frequency response shows the adjustment to the frequency response when compared to the spectrogram shown in Table 1, whilst still clearly maintaining the correct fundamental frequency.
+                </p>
+                <figure>
+                    <table class="table text-light">
+                        <tr>
+                            <th>
+                                Audio
+                            </th>
+                            <th>
+                                Waveform
+                            </th>
+                            <th>
+                                Spectrogram
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="align-middle">
+                                <audio controls src="./audio/full-model.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./full-model-waveform.PNG" width="499px" alt="">
+                            </td>
+                            <td>
+                                <img src="./full-model-spectrum.PNG" width="498px"  alt="">
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="figure-caption mx-auto text-light text-center">Table 7: Audio, waveform and spectrogram of the full connected model of a flute playing A4, through a resonating membrane of width 66cm and length 12cm in a virtual space of dimensions 30 metres by 20 metres.</figcaption>
+                </figure>
             </div>
             <div>
                 <h3>4. Presets</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
+                <p>
+                    The presets are defined individually for each section of the system, allowing a wide range of sounds through different combinations. They are written using JavaScript Object Notation (JSON) files, and an example is shown in Figure 9. 
+                </p>
+                <div class="d-flex">
+                    <figure class="figure mx-auto">
+                        <pre class="figure-img" style="overflow-y: hidden; ">
+                            <code>
+            {
+                "breath": 0.3,
+                "pressure": 0.275,
+                "attack": 0.00025,
+                "vibDepth": 0.025
+            }
+                            </code>
+                        </pre>
+                        <figcaption style="font-style: italic;" class="figure-caption text-light">Figure 9: Example of a JSON preset for the flute model.</figcaption>
+                    </figure>
+                </div>
+                <p>
+                    A range of preset examples can be heard in Table 8 and are shown alongside their waveform and spectrogram. Some of these will be discussed in more detail below. For consistency the model will always be playing a 440 Hz A4 with a duration of 1 second and a sample rate of 48kHz and have the dry to wet mix set to 100% wet for both the membrane resonator and the reverb.                 </p>
+                <figure>
+                    <table class="table text-light">
+                        <tr>
+                            <th>
+                                Example
+                            </th>
+                            <th>
+                                Audio
+                            </th>
+                            <th>
+                                Waveform
+                            </th>
+                            <th>
+                                Spectrogram
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                1
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Breathy.json", "Flute.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/flute-small-breathy/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-breathy/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-breathy/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                2
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Hard.json", "Flute.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/flute-small-hard/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-hard/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-hard/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                3
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Soft.json", "Flute.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/flute-small-soft/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-soft/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-soft/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                4
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Tremolo.json", "Flute.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/flute-small-tremolo/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-tremolo/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/flute-small-tremolo/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                5
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Soft.json", "Guitar1.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/guitar1-small-soft/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/guitar1-small-soft/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/guitar1-small-soft/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                6
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Breathy.json", "HalfFlute.json", "BigRoom.json"
+                                </p>
+                                <audio controls src="./presets/half-big-breathy/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/half-big-breathy/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/half-big-breathy/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                7
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Breathy.json", "HalfFlute.json" "YorkMinster.json"
+                                </p>
+                                <audio controls src="./presets/half-minster-breathy/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/half-minster-breathy/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/half-minster-breathy/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                8
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Breathy.json", "HalfFlute.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/half-small-breathy/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/half-small-breathy/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/half-small-breathy/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="align-middle" style="text-align: center;">
+                                9
+                            </td>
+                            <td class="align-middle text-center">
+                                <p>
+                                    "Hard.json", "Plate.json", "SmallRoom.json"
+                                </p>
+                                <audio controls src="./presets/plate-small-hard/audio.wav"></audio>
+                            </td>
+                            <td>
+                                <img src="./presets/plate-small-hard/waveform.PNG" width="450px" alt="">
+                            </td>
+                            <td>
+                                <img src="./presets/plate-small-hard/spectrogram.PNG" width="452px" alt="">
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="mx-auto figure-caption text-light text-center">Table 8: Table containing preset examples with audio clips and corresponding waveform and spectrograms.</figcaption>
+                </figure>
+                <p>
+                    Example 5 shows how drastically the timbre of the sound can be altered by modifying the size of the rectangular membrane, with the resonant modes significantly amplifying harmonics 2, 3 and 5 and the lack of a resonance at the fundamental frequency attenuating this. This gives a brighter sound with much more mid-frequency content and sounds less like a real flute. 
+                </p>
+                <p>
+                    The waveforms in most examples clearly show the amplitude modulation from the tremolo, but when the tremolo depth is turned up in examples 2 and 4 this is especially pronounced, creating a “wobbling” effect in the audio. The frequency of the tremolo can also be approximately measured from the waveform, by picking two peaks and calculating the period between them. Choosing peaks at 0.3835 seconds and 0.5648 seconds the frequency can then be calculated as:
+                </p>
+                <figure style="font-size: 125%;">
+                    $$ f_{trem} = \frac{1}{T} = \frac{1}{t_2 - t_1} = \frac{1}{0.5648-0.3835} = 5.5157\ Hz $$
+                </figure>
+                <p>
+                    This matches the system design, where the tremolo frequency is defined as 5.5 Hz.
+                </p>
+                <p>
+                    The waveform of example 7 also clearly shows the time domain blurring and increased decay time for a much larger simulated space, which matches the preset’s longer early reflection times and higher comb filter feedback, both which increase the \(RT_{60}\) of the reverberation.
                 </p>
             </div>
             <div>

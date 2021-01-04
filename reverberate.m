@@ -15,7 +15,7 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
     earlyReflectionVals = readmatrix(reflectionPresetPath);
 
     % Zero pad the file so the output will include the reverb tail
-    in = zeros(length(input) + Fs, 1);
+    in = zeros(length(input) + 8 * Fs, 1);
     in(1:length(input)) = input;
 
     % Define impulse excitation for obtaining impulse response

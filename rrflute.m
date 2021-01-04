@@ -33,6 +33,8 @@ function[output, membraneResponse, reverbResponse] = rrflute(frequency, duration
     note = flute(frequency, duration, breathLevel, pressure, attackTime, ...
         vibDepth, Fs);
     
+    
+    
     % Only take time to resonate flute if the mix includes some 
     if resMix > 0
         % Convolve the flute sound through an absorbing membrane model with the

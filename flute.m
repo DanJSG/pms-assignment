@@ -136,6 +136,7 @@ function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth,
     
     % Apply output envelope to smooth input and output
     output = output .* outputEnv;
+    output = output';
     
 end
 
