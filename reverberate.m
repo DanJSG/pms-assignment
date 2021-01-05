@@ -28,7 +28,7 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
 
     % Initialize Impulse Response Output Signal
     nIrSamples = length(impulse);
-    irOutput = zeros(nIrSamples, 1);
+    ir = zeros(nIrSamples, 1);
 
     % Set Maximum delay time for the unit reverberators of 70 ms
     maxDelay = ceil(0.07 * Fs);
@@ -87,11 +87,9 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
         [irApf2, apfBuffer2] = apf(irApf1, apfBuffer2, n, apfDelayTime2, apfGain2);
 
         % Update current sample of the impulse response
-        irOutput(n, 1) = irEarlyReflections;
+        ir(n, 1) = irApf2;
 
     end
-    
-    ir = irOutput;
     
     % Reverberate
     for n = 1:nOutputSamples
@@ -117,9 +115,7 @@ function [output, ir] = reverberate(input, Fs, mix, feedback, reflectionPresetPa
 
     end
 
-    % Mix direct (dry) sound with reverberated signal and normalize between
-    % -0.98 and 0.98
-%     output = normalize(((1 - mix) * in) + (mix * output), 'range', [-0.98, 0.98]);
+    % Mix direct (dry) sound with reverberated signal
     output = ((1 - mix) * in) + (mix * output);
     
 end

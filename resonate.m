@@ -36,8 +36,6 @@ function[output, ir] = resonate(input, mix, dimensions, excitationPoint, ...
     excitationImpulse =  5 * hanning(excitationSize * 2 + 1);
     excitationShape = excitationImpulse * excitationImpulse';
 
-    
-    
     % Load the shape into the centre of the mesh at current timestep (t) 
     currentDisplacement(excitationRangeX, excitationRangeY) = excitationShape;
     % Let the mesh at the previous timestep, t-1 have the same shape.
@@ -104,6 +102,7 @@ function[output, ir] = resonate(input, mix, dimensions, excitationPoint, ...
     lpf = fir1(20, 0.25);
     filteredMembraneResponse = filter(lpf, 1, membraneResponse);
     
+    % Store the plucked response of the membrane
     ir = membraneResponse;
     
     % Convolve the input signal 

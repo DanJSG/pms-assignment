@@ -20,8 +20,6 @@
 %   Fs : sampling frequency
 function [out, buffer] = earlyreflections(in, buffer, Fs, n, delays)
 
-    
-
     % Delay times converted from milliseconds
     delayTimes = fix(Fs .* delays(:, 1));
 

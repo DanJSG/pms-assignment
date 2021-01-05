@@ -4,7 +4,7 @@
 <head>
     <link rel="stylesheet" href="./libs/bootstrap.min.css">
     <link rel="stylesheet" href="./style.css">
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="./libs/mathjax/tex-mml-chtml.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Physical Modelling Synthesis Assignment</title>
@@ -23,22 +23,27 @@
             </div>
             <div>
                 <h3>1. Introduction</h3>
-                <p>Software implementations of physical models offer exceptional quality and expressivity when imitating real acoustic instruments [1]. These implementations replicate the causal interactions of vibrating systems and can accurately reproduce the idiosyncrasies and unique characteristics of an instrument [2]. Traditional physical modelling starts with a continuous differential equation of the mechanical system and then numerically discretises this using finite difference methods, such as the Finite Difference Time Domain (FDTD) approach. Finite difference solutions work by splitting sections of the model into a 1D line, or 2D or 3D mesh of nodes, then approximating the relevant differential equation by a finite difference equivalent calculated based on values at neighbouring points, and taking into account the given boundary and initial conditions of the system [3]. This effectively “brute forces” the calculation and is therefore very computationally demanding, meaning that historically it has been an unfeasible approach, especially for real-time systems [1].</p>
-                <p>A more computationally friendly alternative is the digital waveguide methods. The digital waveguide method attempts to explicitly simulate the travelling waves of a system as opposed to a real, physical variable within the system [1]. The 1D digital waveguide for an ideal, infinite, undamped string can be demonstrated by first considering the differential wave equation for this ideal string:</p>
+                <p>
+                    Software implementations of physical models offer exceptional quality and expressivity when imitating real acoustic instruments [1]. These implementations replicate the causal interactions of vibrating systems and can accurately reproduce the idiosyncrasies and unique characteristics of an instrument [2]. Traditional physical modelling starts with differential equations of the mechanical systems and then discretises these using finite difference solutions. These work by splitting sections of the model into a 1D line, or 2D grid, and then approximating the value at each point based on values at neighbouring points [3].                 </p>
+                <p>
+                    A more computationally friendly alternative is the digital waveguide method. This method simulates the travelling waves of a system as opposed to a physical variable within the system [1]. The 1D digital waveguide for an ideal string can be demonstrated by first considering the differential wave equation for this ideal string:                </p>
                 <p style="font-size: 125%;">
                     $$\frac{\partial y(t, x)}{\partial t^2} = c^2\frac{\partial y(t, x)}{\partial x^2}$$
                 </p>
-                <p>This can then be solved by the travelling wave solution:</p>
+                <p>
+                    This can then be solved by the travelling wave solution:
+                </p>
                 <p style="font-size: 125%;">
                     $$y(t, x) = y^+(t - \frac{x}{c}) + y^-(t + \frac{x}{c})$$
                 </p>
-                <p>where \(y^-\) denotes the left travelling wave and \(y^+\)denotes the right travelling wave. This can then be easily modified to use discrete sampling points:</p>
+                <p>
+                    where \(y^-\) and \(y^+\) denote the left and right travelling waves respectively. This can be discretised as:
+                </p>
                 <figure style="font-size: 125%;">
                     $$y(nT, mX) = y^+(n - m) + y^-(n + m)$$
                 </figure>
                 <p>
-                    where \(nT\) is the sampling interval and \(mX\) are the sampling points, where \(X=cT\) and \(c≈343 m/s\) (the speed of sound). A simple example of some MATLAB&#174; code implementing this is shown in Figure 1, alongside the wave this produces on the string in Figure 2. The red and blue waves show the left and right travelling waves, and the yellow wave shows the total displacement of the string.
-                </p>
+                    where \(nT\) is the sampling interval, \(mX\) are the sampling points,  \(X=cT\) and \(c≈343 m/s\). An example MATLAB implementation of this is shown in Figure 1, and the waves this produces is shown in Figure 2. An audio example of this can be heard in Table 1.                </p>
                 <div class="d-flex justify-content-around">
                     <figure class="figure">
                         <pre class="figure-img" style="overflow-y: hidden;">
@@ -60,51 +65,87 @@ end
                         <figcaption style="font-style: italic;" class="figure-caption text-light">Figure 1: Example block of MATLAB code showing the main loop in a 1D Digital Waveguide implementation.</figcaption>
                     </figure>
                     <figure class="figure">
-                        <img class="figure-img" height="254px" width="500px" src="./string-pluck.gif" alt="">
-                        <figcaption style="font-style: italic;" class="figure-caption text-light">Figure 2: Simulated travelling waves and wave displacement on an ideal string.</figcaption>
+                        <img style="padding-left: 25px;" class="figure-img" height="260px" width="450px" src="./string-pluck.gif" alt="">
+                        <figcaption style="font-style: italic; padding-left: 25px;" class="figure-caption text-light">Figure 2: Simulated travelling waves and wave displacement on an ideal string.</figcaption>
                     </figure>
                 </div>
                 <p>
-                    This makes it simple and efficient to implement in software using delay lines and is what was used in Yamaha’s VL1 synthesizer from 1993 [4]. There are also modern commercially available physical modelling software plugins, such as Pianoteq, an award-winning virtual instrument targeted at primarily modelling pianos [5]. 
+                    This is simple and efficient to implement in software using delay lines and was used in Yamaha’s VL1 synthesizer from 1993 [4]. There are also modern commercially available physical modelling synthesizers, such as Pianoteq, a virtual instrument targeted at modelling pianos [5]. 
                 </p>
+                <figure>
+                    <table class="table text-light w-75 mx-auto">
+                        <tr>
+                            <th>
+                                Description
+                            </th>
+                            <th>
+                                Audio
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                Digital Waveguide Plucked String Example
+                            </td>
+                            <td>
+                                <audio controls src="./audio/plucked-string.wav"></audio>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Yamaha VL1 Example [6]
+                            </td>
+                            <td>
+                                <audio controls src="./audio/vl1.wav"></audio>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Pianoteq Example [7]
+                            </td>
+                            <td>
+                                <audio controls src="./audio/pianoteq.mp3"></audio>
+                            </td>
+                        </tr>
+                    </table>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Table 1: Audio examples of a digital waveguide plucked string, the Yamaha VL1 and Pianoteq.</figcaption>
+                </figure>
                 <p>
-                    The 1D digital waveguide has also been expanded to 2D and 3D models [6]. The 2D model for an ideal membrane takes several of the bi-directional delay lines of the 1D model and connects these together at lossless, 4-port scattering junctions [6]. A block diagram showing a small section of a 2D digital waveguide mesh is shown in Figure 3.
-                </p>
+                    The 1D digital waveguide has also been expanded to 2D and 3D models [8]. The 2D model for an ideal membrane takes several bi-directional delay lines and connects these together at lossless, 4-port scattering junctions [8]. A block diagram showing a section of a 2D digital waveguide mesh is shown in Figure 3.                </p>
                 <figure class="figure w-100">
                     <div class="d-flex">
                         <img class="figure-img mx-auto" src="./2d-waveguide-mesh.png" alt="">
                     </div>
-                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 3: Block diagram of a section of a 2D digital waveguide mesh [6].</figcaption>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 3: Block diagram of a section of a 2D digital waveguide mesh, including 4 scattering junctions [8].</figcaption>
                 </figure>
                 <p>
-                    Physical modelling synthesizers in the commercial space compete most directly with samplers, although they do also have some competition with other synthesis algorithms such as FM synthesis. The primary advantage of physical models over sample-based approaches for realistic acoustic instrument simulation lies in the flexibility of the parameters the player can control in the model, allowing for highly expressive performances and a bigger range of timbral variety from a single model [1, 7]. There is also the benefit that physical models use very little storage and have low RAM requirements when compared to industry standard sampling alternatives. For example, the huge difference is clear when comparing the size of Pianoteq, a physical modelling instrument, with Keyscape, an industry standard piano sampling library. Pianoteq requires just 50MB of storage space on the user’s computer, compared to Keyscape’s 77GB, and Pianoteq also requires just 256MB of RAM, compared to Keyscape’s minimum requirement of 8GB [8, 9, 10]. However, this does not mean that physical models are without issue. Physical modelling synthesizers generally utilise the CPU more heavily than sampling-based approaches, but with modern computing power this has become less of an issue. The biggest problem with physical modelling synthesis is the complexity involved with designing efficient algorithms for accurate and realistic sounding models of complex instruments with a wide range of parameters, particularly when compared with sampling based approaches which simply use digital audio playback along with post processing techniques such as filtering for timbral changes.
+                    Physical modelling synthesizers in the commercial space compete most directly with samplers. The primary advantage of physical models over samplers for acoustic instrument simulation is the flexibility of the parameters the player can control in the model, allowing for expressive performances and a wider range of timbral variety [1, 9].  Physical models also use little storage and have low RAM requirements when compared to industry standard sample libraries, such as Keyscape. Pianoteq requires just 50MB of storage space, compared to Keyscape’s 77GB, and just 256MB of RAM, compared to Keyscape’s minimum requirement of 8GB [10, 11, 12]. The biggest problem physical modelling synthesis faces is the complexity of designing efficient algorithms, particularly for realistic models of complex instruments with many parameters.                 
                 </p>
                 <p>
-                    This article will detail the implementation of a physics inspired system of a resonated flute played in a virtual acoustic space, from the raw mathematics to the MATLAB code. There will be analysis performed to detail the success of the implementation and verify that it behaves as expected, as well as a range of “presets” showing the range of possible sounds it can create and discussion surrounding the limitations and potential future work of the project.
+                    This article details the implementation of a physics inspired model of a resonated flute played in a virtual acoustic space. There will be analysis performed to determine the success of the implementation and verify its behaviour, as well as preset examples to demonstrate its range of sounds.                
                 </p>                
             </div>
             <div>
                 <h3>2. System</h3>
                 <p>
-                    The resonated flute in the virtual acoustic space is built as 3 distinct parts, with each part then connected to one another. The modelled flute is based on the physical model for a slide flute, using the digital waveguide approach to synthesize the travelling waves within the bore of the flute. The equation for this was shown in section 1 of the article. The pitch of this is then adjusted by modifying the length of the delay line, thus in effect modifying the length of the bore. This model also features periodic amplitude modulation, or tremolo, to add to the realism of the sound.  The model features four adjustable parameters which alter the timbre of the model: pressure, which simulates how hard the flute is blown into; breath, which simulates how much “breath” sound comes through the flute; attack time, which affects the onset time of the note; and tremolo depth, the level of fluctuation in amplitude. The block diagram for a basic digital waveguide implementation of a slide flute is shown in Figure 4.
+                    The resonated flute in the virtual acoustic space is built from 3 connected models. The modelled flute is based on the physical model for a slide flute, using the digital waveguide to synthesize travelling waves within the bore of the flute. The pitch is adjusted by modifying the length of the delay line, thus modifying the length of the bore. This model also features periodic amplitude modulation, or tremolo, to add to the realism of the sound. The model features four adjustable parameters which alter the timbre of the model: pressure, simulating how much pressure is blown into the flute; breath, simulating how much “breath” noise comes through the flute; attack time, which affects the onset time of the note; and tremolo depth, the level of fluctuation in amplitude. The block diagram for a basic digital waveguide implementation of a slide flute is shown in Figure 4.                
                 </p>
                 <figure class="figure w-100">
                     <div class="d-flex">
                         <img class="figure-img mx-auto" src="./basic-flute-block-diagram.PNG" alt="">
                     </div>
-                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 4: Block diagram of a simple digital waveguide slide flute [11].</figcaption>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 4: Block diagram of a simple digital waveguide slide flute [13].</figcaption>
                 </figure>
                 <p>
-                    The implementation detailed in this article has expanded upon the model from this block diagram by adding a flow envelope to control the amplitude of the input noise over time, as well as adding a third delay line of half the length of the existing at the input of the system, to simulate the delay of the player blowing across the mouthpiece of the flute [12]. The block diagram for this extended model is shown in Figure 5.
+                    The implementation detailed in this article expands this model by adding a flow envelope to control the noise input’s amplitude over time, as well as adding a third half-length delay line at the input of the system to simulate the delay of the player blowing across the mouthpiece of the flute [14]. This extended model is shown in Figure 5.
                 </p>
                 <figure class="figure w-100">
                     <div class="d-flex">
                         <img class="figure-img mx-auto" src="./extended-flute-block-diagram.PNG" alt="">
                     </div>
-                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 5: Block diagram of an extended digital waveguide slide flute [12].</figcaption>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Figure 5: Block diagram of an extended digital waveguide slide flute [14].</figcaption>
                 </figure>
                 <p>
-                    The flute is then convolved by the impulse response of a physically modelled 2D absorbing membrane. This membrane is modelled using the FDTD equation and simulates the acoustic pressure across the membrane in all directions. The membrane’s response is implemented by considering the 2D differential wave equation:
+                    The flute is then convolved by the impulse response of a physically modelled 2D absorbing membrane. This membrane is modelled using the FDTD equation and simulates the acoustic pressure across the membrane in all directions. The model is implemented by considering the 2D differential wave equation:                 
                 </p>
                 <figure style="font-size: 125%;">
                     $$\frac{\partial u(t, x, y)}{\partial t^2} = c^2 \left(\frac{\partial^2 u(t, x, y)}{\partial x^2} + \frac{\partial^2 u(t, x, y)}{\partial y^2}\right)$$
@@ -116,22 +157,23 @@ end
                     $$u_{x, y}^{n+1} = Au_{x, y}^n + B(u_{x+1, y}^n + u_{x-1, y}^n + u_{x, y+1}^n + u_{x, y-1}^n) + Cu_{x, y}^{n-1}$$
                 </figure>
                 <p>
-                    where \(u_{l,h}^n\) is the acoustic pressure at coordinate \((l,h)\) on the membrane at sample point \(n\), and \(A\), \(B\), and \(C\) are the absorption coefficients. The size of the membrane is adjustable, as well as the size and location of the excitation point, the position that the output is sampled from, and the absorption coefficient at the boundaries. Convolving the output of the flute signal with the impulse response of this effectively causes the sound of the flute to be resonated by the membrane. There is also a mix control which balances the mix between dry sound and the convolved signal. 
+                    where \(u_{l,h}^n\) is the acoustic pressure at coordinate \((l,h)\) on the membrane at sample point \(n\), and \(A\), \(B\), and \(C\) are the absorption coefficients. The size of the membrane is adjustable, as well as the size and location of the excitation point, the position that the output is sampled from, and the boundary gain. Convolving the output of the flute signal with the impulse response of this effectively causes the sound of the flute to be resonated by the membrane. There is also a mix control which balances the mix between dry sound and the convolved signal. 
                 </p>
                 <p>
-                    The output of this is then processed through a virtual acoustic space reverberation, implemented based on the Moorer reverb algorithm using comb and all-pass filters, as well as a tapped delay line for the early reflections. The early reflection times and the gains of these reflections can be altered, as well as the feedback of the comb filters, which controls the reverberation time. There is also a mix control which balances the dry, direct sound with the reverberated signal. A diagram for the reverberation network is shown in Figure 6. 
+                    The membrane’s output is then processed through a virtual acoustic space, implemented based on the Moorer reverb algorithm using comb and all-pass filters, and a tapped delay line for early reflections. The early reflection times and related gains can be adjusted, as well as the feedback of the comb filters, which control the reverberation time. There is also a mix control which balances the dry, direct sound with the reverberated signal. A diagram of this network is shown in Figure 6.                 
                 </p>
                 <figure class="figure w-100">
                     <div class="d-flex">
                         <img class="figure-img mx-auto" width="550px" src="./moorer-reverb-with-er.PNG" alt="">
                     </div>
-                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 6: Digital reverberation network diagram, based on a reverberation network from [13] with the addition of the early reflections block (ER) [14]. Cn represent comb filters and An represent all pass filters.</figcaption>
+                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 6: Digital reverberation network diagram, based on a reverberation network from [15] with the addition of the early reflections block (ER) [16]. Cn represent comb filters and An represent all pass filters.</figcaption>
                 </figure>
             </div>
             <div>
-                <h3>3. Examples</h3>
+                <h3>3. System Analysis and Verification</h3>
                 <p>
-                    The individual sections of the system will now be heard and analysed, and the interactions between these shown. The presets used in this section are the “Breathy” preset for the flute, the “Flute” preset for the resonant membrane, and the “BigRoom” preset for the room simulation. These presets will be discussed further in Section 4. Table 1 has an audio snippet of the flute section of the model playing an A4 (440Hz) along with its corresponding spectrogram.                </p>
+                    The individual sections of the system will now be heard and analysed, and the interactions between these shown. Table 2 has an audio snippet of the flute section of the model playing an A4 (440Hz) along with its corresponding spectrum.
+                </p>
                 <figure>
                     <table class="table text-light">
                         <tr>
@@ -151,34 +193,34 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Table 1: Table providing an audio file of the modelled flute playing an A4, along with the corresponding waveform and spectrogram.</figcaption>
+                    <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Table 2: Table providing an audio file of the modelled flute playing an A4, along with the corresponding waveform and spectrum.</figcaption>
                 </figure>
                 <p>
-                    This spectrogram shows that the fundamental frequency lies in approximately the right area of the spectrum for a 440Hz A4 but is roughly 20Hz flat. This is due to pitch quantization which occurs during the discretisation process, where the integer length of the delay lines causes inaccuracies in pitch. In an ideal case, without rounding errors and quantized delay lines, the number of samples in the delay line could be calculated as follows:
+                    This spectrum shows that the fundamental frequency lies in approximately the correct area of the spectrum for a 440Hz A4 but is roughly 20Hz flat. This is due to pitch quantization which occurs due to the integer length of the delay lines. In an ideal case, with fractional delay lines, the number of samples could be calculated as follows:
                 </p>
                 <figure style="font-size: 125%;">
                     $$ N_{left} = N_{right} = \left(0.25 \times \frac{F_s}{f_0}\right) = 0.25 \times \frac{48000}{440} = 27.\dot{2}\dot{7}\ samples$$
                 </figure style="font-size: 125%;">
                 <p>
-                    The total bore length is therefore the summation of the length of both delay:
+                    The total bore length is therefore the summation of both delay line lengths:
                 </p>
                 <figure style="font-size: 125%;">
                     $$ N_{bore} = N_{left} + N_{right} = 54.545\ samples $$
                 </figure>
                 <p>
-                    Then calculating the oscillation period based on twice the delay period of the delay line [15]:
+                    Then calculating the oscillation period based on twice the delay period [17]:
                 </p>
                 <figure style="font-size: 125%;">
                     $$ T_N = 2 \times N_{bore} = 2 \times 54.545 = 109.091\ samples $$
                 </figure>
                 <p>
-                    Then finally converting this to metres and thus calculating the fundamental:
+                    Then finally converting to metres and calculating the fundamental:
                 </p>
                 <figure style="font-size: 125%;">
                     $$ f_0 = \frac{1}{\frac{T_N}{F_s}} = \frac{1}{\frac{109.091}{48000}}= 440\ Hz $$
                 </figure>
                 <p>
-                    The harmonic series visible in the spectrogram also matches that of a flute, where the harmonics are integer multiples of the fundamental frequency [16]. Table 2 shows the fundamental and first 4 harmonics.
+                    The harmonic series visible in the spectrum also matches that of a flute, where the harmonics are integer multiples of the fundamental frequency [18]. Table 3 shows the first 4 harmonics.
                 </p>
                 <figure>
                     <table class="w-50 mx-auto table text-light">
@@ -238,13 +280,13 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 2: Table showing measured harmonic values alongside their expected relation to the fundamental frequency.</figcaption>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 3: Table showing measured harmonic values alongside their expected relation to the fundamental frequency.</figcaption>
                 </figure>
                 <p>
                     The small levels of inharmonic frequencies across the spectrum show the noise from the breath input to the system.
                 </p>
                 <p>
-                    An example audio clip of the absorbing membrane’s response can be heard in Table 3, and the corresponding waveform and spectrogram can also be seen.
+                    The absorbing membrane’s plucked response can be heard in Table 4, along with the corresponding waveform and spectrum. This membrane has a length of 66cm and a width of 12cm, approximately matching the dimensions of a flute [19, 21].                
                 </p>
                 <figure>
                     <table class="table text-light">
@@ -268,7 +310,7 @@ end
                     <figcaption style="font-style: italic;" class="figure-caption text-light text-center">Table 3: Table providing an audio file of the modelled absorbing membrane of length 66cm and width 12cm, along with the corresponding waveform and spectrogram.</figcaption>
                 </figure>
                 <p>
-                    The spectrogram shown in Table 3 clearly shows the resonant modes of the membrane through the repeated spikes. The values of these are shown in Table 4. These modes can be altered by changing the dimensions of the membrane, the position or size of the excitation, and the position the output is measured from.
+                    The spectrum shown in Table 4 shows the resonant modes of the membrane through the repeated spikes. These values are shown in Table 5. These modes can be altered by changing the dimensions of the membrane, the position or size of the excitation, and the output position. The decay time of the membrane can also be adjusted by modifying the boundary gain of the model, with lower values giving longer decay times. 
                 </p>
                 <figure>
                     <table class="table w-50 mx-auto text-light">
@@ -317,19 +359,19 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 4: Table showing the resonant mode peak frequencies from the modelled absorbing membrane of length 66cm and width 12cm.</figcaption>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 5: Table showing the resonant mode peak frequencies from the modelled absorbing membrane of length 66cm and width 12cm.</figcaption>
                 </figure>
                 <p>
-                    When the output of the modelled flute playing an A4 is convolved with the response of the membrane, this alters the frequency response, boosting it at the resonant mode peaks and attenuating it at other points. This can be seen in Figure 7, where the convolved signal’s frequency spectrum has a higher peak at the resonant frequency than the non-convolved signal, as well as having lower values at other, non-resonant points of the membrane’s frequency response.
+                    When the output of the modelled flute is convolved with the membrane’s response, the frequency response is altered, boosting it at the resonant modes and attenuating it elsewhere. Figure 7 shows that the convolved signal’s frequency spectrum has a higher peak at the resonant frequency than the non-convolved signal, and lower values at other points on the membrane’s frequency response.
                 </p>
                 <figure class="figure w-100">
                     <div class="d-flex">
                         <img class="figure-img mx-auto" width="550px" src="./convolved-vs-not-spectrum.PNG" alt="">
                     </div>
-                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 7: Spectrogram showing the frequency response of the membrane, compared to the frequency responses of the non-convolved flute and the convolved flute. The peaks have been labelled with dotted lines to highlight the difference.</figcaption>
+                    <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 7: Frequency response of the membrane, compared to the frequency responses of the non-convolved flute and the convolved flute. The peaks have been labelled with dotted lines to highlight the difference.</figcaption>
                 </figure>
                 <p>
-                    The third section of the system is the Moorer reverb implementation. An impulse response of a room 30 metres long and 20 metres wide can be seen and heard in Table 5, along with the isolated early reflections. 
+                    The third section of the system is the Moorer reverb implementation. An impulse response of a room 30 metres long and 20 metres wide can be seen and heard in Table 6, along with the isolated early reflections (ERs).                 
                 </p>
                 <figure>
                     <table class="table">
@@ -356,10 +398,10 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 5: Table showing the impulse response and early reflections of a simulated room which is 30 metres long and 20 metres wide.</figcaption>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 6: Table showing the impulse response and early reflections of a simulated room which is 30 metres long and 20 metres wide.</figcaption>
                 </figure>
                 <p>
-                    The isolated early reflections show that the tapped delay line is behaving as expected, with the reflections falling at the correct points in the time domain. The early reflection times are shown in Table 6, along with the given early reflection times. The given times were calculated based on the delay times and approximate amplitudes gathered from [19]. 
+                    The isolated early reflections show the tapped delay line behaving as expected, with the reflections at the correct points in the time domain. The measured early reflection times are shown in Table 7, against the given early reflection times. The given times were calculated based on the delay times and approximate amplitudes gathered from [21].                 
                 </p>
                 <figure>
                     <table class="table text-light w-50 mx-auto">
@@ -468,10 +510,10 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 6: Table showing the target early reflection times compared to the measured early reflection times.</figcaption>
+                    <figcaption style="font-style: italic;" class="w-50 mx-auto figure-caption text-light text-center">Table 7: Table showing the target early reflection times compared to the measured early reflection times.</figcaption>
                 </figure>
                 <p>
-                    Changing the early reflection times changes the size and shape of the room being simulated. Adjusting the comb filter feedback gain also has an impact on the perceived room size and can vastly affect the \(RT_{60}\) of the system. The \(RT_{60}\)  can be estimated by plotting the impulse response normalized to unity gain (0dB), plotting a horizontal line at -60dB against this and then finding the point at which the amplitude does not rise above -60dB again. Figure 8 shows this plot for the simulated room shown in Table 5, with the \(RT_{60}\) of approximately 845ms labelled.
+                    Changing the early reflection times changes the size and shape of the room being simulated. Adjusting the comb filter feedback gain also has an impact on the perceived room size and can vastly affect the \(RT_{60}\) of the system. The \(RT_{60}\)  can be estimated by plotting the impulse response normalized to 0dB, plotting a horizontal line at -60dB against this and then finding the point at which the amplitude does not rise above -60dB again. Figure 8 shows this plot for the simulated room, with the \(RT_{60}\) of approximately 845ms labelled.                
                 </p>
                 <figure class="figure w-100">
                     <div class="d-flex">
@@ -480,7 +522,7 @@ end
                     <figcaption style="font-style: italic; width: 550px;" class="figure-caption mx-auto text-light text-center">Figure 8: \(RT_{60}\) estimation using a normalized impulse response plot for a 30 metre long and 20 metre wide simulated room.</figcaption>
                 </figure>
                 <p>
-                    The audio, waveform and spectrogram of the fully connected system is shown in Table 7. The waveform shows the extended reverb tail and pre-delay occurring from the simulated room when compared to the waveform in Table 1, and the frequency response shows the adjustment to the frequency response when compared to the spectrogram shown in Table 1, whilst still clearly maintaining the correct fundamental frequency.
+                    The audio, waveform and spectrum of the fully connected system is shown in Table 8. The waveform shows the extended reverb tail and pre-delay occurring from the simulated room when compared to the waveform in Table 2, and the frequency response shows the adjustment compared to the spectrum shown in Table 2, whilst still maintaining the correct fundamental frequency.                
                 </p>
                 <figure>
                     <table class="table text-light">
@@ -507,13 +549,13 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="figure-caption mx-auto text-light text-center">Table 7: Audio, waveform and spectrogram of the full connected model of a flute playing A4, through a resonating membrane of width 66cm and length 12cm in a virtual space of dimensions 30 metres by 20 metres.</figcaption>
+                    <figcaption style="font-style: italic;" class="figure-caption mx-auto text-light text-center">Table 8: Audio, waveform and frequency spectrum of the full connected model of a flute playing A4, through a resonating membrane of width 66cm and length 12cm in a virtual space of dimensions 30 metres by 20 metres.</figcaption>
                 </figure>
             </div>
             <div>
                 <h3>4. Presets</h3>
                 <p>
-                    The presets are defined individually for each section of the system, allowing a wide range of sounds through different combinations. They are written using JavaScript Object Notation (JSON) files, and an example is shown in Figure 9. 
+                    The presets are defined individually for each section of the system, enabling a wide range of sounds through different combinations. They are written as JavaScript Object Notation (JSON) files, and an example is shown in Figure 9.                 
                 </p>
                 <div class="d-flex">
                     <figure class="figure mx-auto">
@@ -531,7 +573,8 @@ end
                     </figure>
                 </div>
                 <p>
-                    A range of preset examples can be heard in Table 8 and are shown alongside their waveform and spectrogram. Some of these will be discussed in more detail below. For consistency the model will always be playing a 440 Hz A4 with a duration of 1 second and a sample rate of 48kHz and have the dry to wet mix set to 100% wet for both the membrane resonator and the reverb.                 </p>
+                    A range of preset examples can be heard in Table 9 and are shown alongside their waveform and spectrum. For consistency, the model will always be playing a 440 Hz A4 with a duration of 1 second and a sample rate of 48kHz, with the dry to wet mix for the membrane and reverb set to 100% wet.                 
+                </p>
                 <figure>
                     <table class="table text-light">
                         <tr>
@@ -702,13 +745,13 @@ end
                             </td>
                         </tr>
                     </table>
-                    <figcaption style="font-style: italic;" class="mx-auto figure-caption text-light text-center">Table 8: Table containing preset examples with audio clips and corresponding waveform and spectrograms.</figcaption>
+                    <figcaption style="font-style: italic;" class="mx-auto figure-caption text-light text-center">Table 9: Table containing preset examples with audio clips and corresponding waveform and frequency spectrums. The audio column also lists the three JSON preset file names that were used for each example, in the order of flute preset, membrane preset, reverb preset.</figcaption>
                 </figure>
                 <p>
-                    Example 5 shows how drastically the timbre of the sound can be altered by modifying the size of the rectangular membrane, with the resonant modes significantly amplifying harmonics 2, 3 and 5 and the lack of a resonance at the fundamental frequency attenuating this. This gives a brighter sound with much more mid-frequency content and sounds less like a real flute. 
+                    Example 5 shows how the timbre of the sound can be altered by modifying the size of the rectangular membrane, with the resonant modes significantly amplifying harmonics 2, 3 and 5 whilst the fundamental is attenuated. This gives a brighter sound with more mid-frequency content and sounds less like a real flute.                 
                 </p>
                 <p>
-                    The waveforms in most examples clearly show the amplitude modulation from the tremolo, but when the tremolo depth is turned up in examples 2 and 4 this is especially pronounced, creating a “wobbling” effect in the audio. The frequency of the tremolo can also be approximately measured from the waveform, by picking two peaks and calculating the period between them. Choosing peaks at 0.3835 seconds and 0.5648 seconds the frequency can then be calculated as:
+                    The waveforms in most examples clearly show the amplitude modulation from the tremolo, but when the tremolo depth is turned up in examples 2 and 4 this is especially pronounced. The frequency of the tremolo can also be measured from the waveform, by picking two peaks and calculating the period between them. Choosing peaks at 0.3835 seconds and 0.5648 seconds the frequency can then be calculated as:                
                 </p>
                 <figure style="font-size: 125%;">
                     $$ f_{trem} = \frac{1}{T} = \frac{1}{t_2 - t_1} = \frac{1}{0.5648-0.3835} = 5.5157\ Hz $$
@@ -717,35 +760,93 @@ end
                     This matches the system design, where the tremolo frequency is defined as 5.5 Hz.
                 </p>
                 <p>
-                    The waveform of example 7 also clearly shows the time domain blurring and increased decay time for a much larger simulated space, which matches the preset’s longer early reflection times and higher comb filter feedback, both which increase the \(RT_{60}\) of the reverberation.
+                    The waveform of example 7 also clearly shows the increased decay time for a much larger simulated space, which matches the preset’s longer early reflection times and higher comb filter feedback, both which increase the \(RT_{60}\) of the reverberation.                
                 </p>
             </div>
             <div>
                 <h3>5. Conclusion</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.
+                <p>
+                    The physics inspired models discussed in this article have been shown to have been effectively implemented within the system developed. Analysis of their outputs and interactions meet expectations based on their underpinning theory. Their ability to produce a wide variety of timbres by varying physically inspired parameters has been shown, and the range of examples demonstrated shows both the potential for realistic, musical flute sounds, as well as more unusual sounds. 
                 </p>
-            </div>
-            <div>
-                <h3>6. Limitations & Future Work</h3>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-                    aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-                    culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p>
+                    The main limitation of the system is the pitch quantization which occurs in the flute model due to the integer quantization of the delay line length. This problem could be solved by using interpolated delay lines which would remove the pitch quantization [22]. These could also be used alongside fractional delay filters to simulate finger holes for smooth note transitions [22]. The reverb with early reflections could also be extended to more closely match the full Freeverb algorithm implementation by adding a second channel for stereo output. This could be achieved by duplicating the network in parallel and adding a value to each of the delay lines used in the network [23]. 
+                </p>
+                <p>
+                    Word Count (excluding references, figures, tables and captions): 1975 words
+                </p>
             </div>
             <div style="text-align: left;" >
                 <h3>6. References</h3>
                 <ol class="ref-list">
-                    <li>O. Smith, ‘Physical Modeling Using Digital Waveguides’, Computer Music Journal, vol. 16, no. 4, pp. 74–91, 1992.</li>
-                    <li>G. Loy, Musimathics, Volume 2. The MIT Press, 2007.</li>
-                    <li>M. N. O. Sadiku, Numerical Techniques in Electromagnetics. CRC Press, 2000.</li>
-                    <li>Stanford University News Service, ‘Music synthesis approaches sound quality of real instruments’, 1994 [Online]. Available: https://news.stanford.edu/pr/94/940607Arc4222.html.</li>
-                    <li>Modartt, Modartt - Pianoteq 7. [Online]. Available: https://www.modartt.com/pianoteq. [Accessed: 29 Dec. 2020].</li>
-                    <li>S. Van Duyne and J. O. Smith, ‘The 2-D digital waveguide mesh’, in Proceedings of IEEE Workshop on Applications of Signal Processing to Audio and Acoustics, 1993, pp. 177–180.</li>
+                    <li>
+                        J. O. Smith, ‘Physical Modeling Using Digital Waveguides’, Computer Music Journal, vol. 16, no. 4, pp. 74–91, 1992.
+                    </li>
+                    <li>
+                        G. Loy, Musimathics, Volume 2. The MIT Press, 2007.
+                    </li>
+                    <li>
+                        M. N. O. Sadiku, Numerical Techniques in Electromagnetics. CRC Press, 2000.
+                    </li>
+                    <li>
+                        Stanford University News Service, ‘Music synthesis approaches sound quality of real instruments’, 1994 [Online]. Available: https://news.stanford.edu/pr/94/940607Arc4222.html.
+                    </li>
+                    <li>
+                        Modartt, Modartt - Pianoteq 7. [Online]. Available: https://www.modartt.com/pianoteq. [Accessed: 29 Dec. 2020].
+                    </li>
+                    <li>
+                        musictrackjp, YAMAHA VL1 Demo & Review. [Online]. Available: https://www.youtube.com/watch?v=OYWxCrz3vmQ. [Accessed: 05 Jan. 2021].
+                    </li>
+                    <li>
+                        Modartt, Modartt - Steinway Model D grand piano. [Online]. Available: https://www.modartt.com/modeld. [Accessed: 05 Jan. 2021].
+                    </li>
+                    <li>
+                        S. Van Duyne and J. O. Smith, ‘The 2-D digital waveguide mesh’, in Proceedings of IEEE Workshop on Applications of Signal Processing to Audio and Acoustics, 1993, pp. 177–180. 
+                    </li>
+                    <li>
+                        R. Rabenstein and L. Trautmann, ‘Digital sound synthesis by physical modelling’, in ISPA 2001. Proceedings of the 2nd International Symposium on Image and Signal Processing and Analysis. In conjunction with 23rd International Conference on Information Technology Interfaces (IEEE Cat., 2001, pp. 12–23.
+                    </li>
+                    <li>
+                        Modartt, Modartt - F.A.Q. [Online]. Available: https://www.modartt.com/faq. [Accessed: 30 Dec. 2020].
+                    </li>
+                    <li>
+                        Spectrasonics - Keyscape - FAQ. [Online]. Available: https://www.spectrasonics.net/products/keyscape/keyscape-faq.php. [Accessed: 30 Dec. 2020].
+                    </li>
+                    <li>
+                        Spectrasonics - Keyscape - Collector Keyboards. [Online]. Available: https://www.spectrasonics.net/products/keyscape/index.php. [Accessed: 30 Dec. 2020].
+                    </li>
+                    <li>
+                        E. J. Berdahl and J. O. Smith III, ‘Virtual Flute’, Stanford University [Online]. Available: https://ccrma.stanford.edu/realsimple/vir_flute/vir_flute.pdf.
+                    </li>
+                    <li>
+                        D. T. Murphy, “Physical Modelling Synthesis: Practical Exercise 9”, University of York [Online].
+                    </li>
+                    <li>
+                        J. A. Moorer, ‘About This Reverberation Business’, Computer Music Journal, vol. 3, no. 2, pp. 13–28, 1979.
+                    </li>
+                    <li>
+                        D. T. Murphy, “Physical Modelling Synthesis: Practical Exercise 11e”, University of York [Online].
+                    </li>
+                    <li>
+                        Hui Wu and A. Hajimiri, ‘Silicon-based distributed voltage-controlled oscillators’, IEEE J. Solid-State Circuits, vol. 36, no. 3, pp. 493–502, Mar. 2001.
+                    </li>
+                    <li>
+                        C. Schmidt-Jones, “Standing Waves and Wind Instruments” in Sound, Physics and Music. 2004.
+                    </li>
+                    <li>
+                        C. Goss, Flute Crafting Dimensions. [Online]. Available: https://www.flutopedia.com/dimensions.htm. [Accessed: 03 Jan. 2021].
+                    </li>
+                    <li>
+                        HyperPhysics, Flute. [Online]. Available: http://hyperphysics.phy-astr.gsu.edu/hbase/Music/flute.html. [Accessed: 03 Jan. 2021].
+                    </li>
+                    <li>
+                        A. Melcher, Amray - The Raytracing Sketchpad. [Online]. Available: https://amcoustics.com/tools/amray. [Accessed: 03 Jan. 2021].
+                    </li>
+                    <li>
+                        R. Hänninen and V. Välimäki, ‘An improved digital waveguide model of a flute with fractional delay filters’, Proc. Nordic Acoustical Meeting (NAM’96): 437, 1996[Online]. Available: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.51.6916&rep=rep1&type=pdf. 
+                    </li>
+                    <li>
+                        J. O. Smith, ‘Freeverb’, in Physical Audio Signal Processing, Center for Computer Research in Music and Acoustics (CCRMA), 2010 [Online]. Available: https://ccrma.stanford.edu/~jos/pasp/Freeverb.html.
+                    </li>
                 </ol>
             </div>
         </div>

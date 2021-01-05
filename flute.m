@@ -27,15 +27,11 @@ function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth,
     boreFeedback = 0.7;
     % Bore delay reflection coefficient (bore delay feedback gain)
     boreReflection = 0.8;
-    
-    disp("Sampling frequency: " + Fs);
-    disp("Fundamental: " + f0);
-    
+       
+    % Set the lengths of the bore and jet delay lines for the desired pitch
     boreDelay = 0.25 * floor(Fs / f0);
     jetDelay = floor(boreDelay / 2);
-    
-    disp("Bore delay length target: " + boreDelay);
-    
+        
     % Flow Setup: ADSR envelope
     % Attack section
     flow(1:attackEnd) = linspace(0, pressure, attackEnd);
@@ -78,8 +74,6 @@ function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth,
     jet = zeros(1, jetDelay);
     % Initialize output
     output = zeros(1, N);
-
-    disp("Delay line length in samples: " + length(rightBore));
     
     % Number of poles for the filter
     numPoles = 2;
@@ -131,11 +125,11 @@ function[output, flow] = flute(f0, duration, breath, pressure, attack, vibDepth,
         leftBore = [leftBore(2:round(boreDelay)), right_end];
 
     end
-    
-    disp(1 / (2 * (((boreDelay + 0.5) * 2) / Fs)))
-    
+       
     % Apply output envelope to smooth input and output
     output = output .* outputEnv;
+    
+    % Flip the orientation of the matrix
     output = output';
     
 end
